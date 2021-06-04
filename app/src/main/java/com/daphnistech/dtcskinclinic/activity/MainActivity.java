@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         }
         context = MainActivity.this;
         MyApplication.getInstance().getPrefManager().clearNotifications();
-        getApplicationContext().getExternalFilesDir(getResources().getString(R.string.app_name));
         //downloadImage();
         if (new PreferenceManager(context, Constant.USER_DETAILS).isLoggedIn()) {
             if (new PreferenceManager(context, Constant.USER_DETAILS).getLoginType().equals(Constant.PATIENT)) {
