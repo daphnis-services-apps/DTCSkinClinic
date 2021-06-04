@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "115783964675",
+    "project_id": "dtc-skin-clinic",
+    "storage_bucket": "dtc-skin-clinic.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:115783964675:android:8dbfa928cbb50ac974d636",
+        "android_client_info": {
+          "package_name": "com.daphnistech.dtcskinclinic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "115783964675-7qnbm9kk733bq4t927vbe7g7ph94m51c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.daphnistech.dtcskinclinic",
+            "certificate_hash": "9e782b19271cc7a3229510bec79dcb5d672a7fae"
+          }
+        },
+        {
+          "client_id": "115783964675-mjjhkep482i584eo0dnlskedlko07jn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6VaiSACQHwb_dCiB79uKHezu0WeRGxEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "115783964675-mjjhkep482i584eo0dnlskedlko07jn8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

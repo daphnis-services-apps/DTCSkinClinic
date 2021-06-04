@@ -1,0 +1,65 @@
+package com.daphnistech.dtcskinclinic.helper;
+
+public class Constant {
+    public static final String USER_DETAILS = "userDetails";
+    public static final String DOCTOR = "doctors";
+    public static final String LOGIN_TYPE = "loginType";
+    public static final String PATIENT = "patients";
+    public static final String DISEASES = "Diseases";
+    public static final String SKIN_DISEASE = "Skin Disease";
+    public static final String COSMETOLOGY = "Cosmetology";
+    public static final String HAIR_PROBLEM = "Hair Problem";
+    public static final String SEX_DISEASE = "Sex Disease";
+    public static final String MOBILE = "mobile";
+    public static final String STEPS = "steps";
+    public static final String PIC1 = "pic1";
+    public static final String PIC2 = "pic2";
+    public static final String PIC3 = "pic3";
+    public static final String PDF = "pdf";
+    public static final String NAME = "name";
+    public static final String AGE = "age";
+    public static final String GENDER = "gender";
+    public static final String ADDRESS = "address";
+    public static final String STATE = "state";
+    public static final String PIN = "pin";
+    public static final String MALE = "Male";
+    public static final String FEMALE = "Female";
+    public static final String OTHERS = "Others";
+    public static final String IS_DIABETES = "isDiabetes";
+    public static final String IS_HYPERTENSION = "isHyperTension";
+    public static final String IS_THYROID_PROBLEM = "isThyroidProblem";
+    public static final String IS_DRUG_ALLERGY = "isDrugAllergy";
+    public static final String IS_SKIN_DISEASE = "isSkinDisease";
+    public static final String IS_COSMETOLOGY = "isCosmetology";
+    public static final String IS_HAIR_PROBLEM = "isHairProblem";
+    public static final String IS_SEX_PROBLEM = "isSexProblem";
+    public static final String OLD_AGE = "oldAge";
+    public static final String COMMENTS = "comments";
+    public static final String DISEASE_TYPE = "diseaseType";
+    public static final String DOCTOR_NAME = "doctorName";
+    public static final String DESIGNATION = "designation";
+    public static final String RATING = "rating";
+
+    public static final int SENDER = 1;
+    public static final int RECEIVER = 2;
+    public static final int DATE = 3;
+
+    public static final String CONSULTATION_FEES = "consultationFees";
+    public static final String USER_ID = "user_id";
+    public static final String DRUG_REMARKS = "drugsRemarks";
+    public static final String PIC1_PATH = "pic1_path";
+    public static final String PIC2_PATH = "pic2_path";
+    public static final String PIC3_PATH = "pic3_path";
+    public static final String IS_LOGGED_IN = "logged_in";
+    public static final String APPOINTMENT_MODE = "mode";
+    public static final String DOCTOR_ID = "doctor_id";
+    public static final String PATIENT_ID = "patient_id";
+    public static final String IS_ONLINE = "is_online";
+    public static final String NOTIFICATIONS = "notifications";
+    public static final boolean ONLINE = true;
+    public static final boolean OFFLINE = false;
+    public static final String SUB_PROBLEM = "subProblem";
+    public static final String IMAGE = "image";
+    public static final String VISIT = "visit";
+    public static final String AFFECTED_AREA = "affectedArea";
+}

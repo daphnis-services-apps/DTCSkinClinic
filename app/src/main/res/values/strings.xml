@@ -1,0 +1,121 @@
+<resources>
+    <string name="app_name">DTC Skin Clinic</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home">Home</string>
+    <string name="chat">Chats</string>
+    <string name="account">My Account</string>
+    <string name="title_activity_add_patient">AddPatient</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="styled_welcome_message"><b><i>Note*</i></b> - This appointment fees is valid for <b><i>15 Days</i></b>. You need to reschedule the appointment after 15 days.</string>
+    <string name="styled_repayment_message"><b><i>Note*</i></b> - You Have to pay separately for every doctor\nआपको हर डॉक्टर के लिए अलग से भुगतान करना होगा</string>
+    <string name="reply_label">Reply</string>
+    <array name="skinDiseasesArray">
+        <item>Acne/मुँहासे</item>
+        <item>Psoriasis/सोरायसिस</item>
+        <item>Leucoderma/सफेद दाग</item>
+        <item>Warts/मस्सा</item>
+        <item>Eczema/एक्जिमा</item>
+        <item>Fungal/दाद</item>
+        <item>Allergy/एलर्जी</item>
+        <item>Blister/फफोले</item>
+        <item>Other/अन्य</item>
+        <item>No idea/जानकारी नहीं</item>
+    </array>
+
+    <array name="skinProblemsArray">
+        <item>No Problem/कोई दिक्कत नहीं</item>
+        <item>Itching/खुजली</item>
+        <item>Burning/जलता हुआ</item>
+        <item>Pain/दर्द</item>
+        <item>Swelling/सूजन</item>
+        <item>Redness/लालपन</item>
+        <item>Other/अन्य</item>
+    </array>
+
+    <array name="cosmeticsArray">
+        <item>Melasma/झाई</item>
+        <item>Wrinkles/झुर्रियों</item>
+        <item>Scar/निशान</item>
+        <item>Excessive hair/अत्यधिक बाल</item>
+        <item>Birth Mark/जन्म चिह्न</item>
+        <item>Blackness/कालापन</item>
+        <item>Other/अन्य</item>
+    </array>
+
+    <array name="cosmeticProblemsArray">
+        <item>No Problem/कोई दिक्कत नहीं</item>
+        <item>Spots/ढाबे</item>
+        <item>Scar/निसान</item>
+        <item>Fine Lines/महीन रेखाएं</item>
+        <item>Other/अन्य</item>
+    </array>
+
+    <array name="hairProblemArray">
+        <item>Hair Fall/बाल झड़ना</item>
+        <item>Dandruff/रूसी</item>
+        <item>White Hair/सफेद बाल</item>
+        <item>Other/अन्य</item>
+        <item>No idea/जानकारी नहीं</item>
+    </array>
+
+    <array name="sexProblemArray">
+        <item>For Male/Female Both</item>
+        <item>Lack of Desire/उत्तेजित होने में असमर्थता</item>
+        <item>Stamina/आंतरिक बल</item>
+        <item>Erectile Dysfunction/नपुंसकता</item>
+        <item>Premature Ejaculation/शीघ्रपतन</item>
+        <item>White Discharge/सफेद पानी गिरना</item>
+        <item>Vaginal Tightening/योनि कसना</item>
+        <item>Painful Intercourse/संभोग के दौरान दर्द</item>
+        <item>Lack of Sexual Interest/सेक्स में रूचि न होनाा</item>
+        <item>Other/अन्य</item>
+        <item>No idea/जानकारी नहीं</item>
+    </array>
+
+    <array name="weekArray">
+        <item>Day/दिन</item>
+        <item>Month/महीना</item>
+        <item>Year/साल</item>
+    </array>
+
+    <array name="india_states">
+        <item>Andaman and Nicobar Islands</item>
+        <item>Andhra Pradesh</item>
+        <item>Arunachal Pradesh</item>
+        <item>Assam</item>
+        <item>Bihar</item>
+        <item>Chandigarh</item>
+        <item>Chhattisgarh</item>
+        <item>Dadra and Nagar Haveli</item>
+        <item>Daman and Diu</item>
+        <item>Delhi</item>
+        <item>Goa</item>
+        <item>Gujarat</item>
+        <item>Haryana</item>
+        <item>Himachal Pradesh</item>
+        <item>Jammu and Kashmir</item>
+        <item>Jharkhand</item>
+        <item>Karnataka</item>
+        <item>Kerala</item>
+        <item>Lakshadweep</item>
+        <item>Madhya Pradesh</item>
+        <item>Maharashtra</item>
+        <item>Manipur</item>
+        <item>Meghalaya</item>
+        <item>Mizoram</item>
+        <item>Nagaland</item>
+        <item>Orissa</item>
+        <item>Pondicherry</item>
+        <item>Punjab</item>
+        <item>Rajasthan</item>
+        <item>Sikkim</item>
+        <item>Tamil Nadu</item>
+        <item>Telangana</item>
+        <item>Tripura</item>
+        <item>Uttaranchal</item>
+        <item>Uttar Pradesh</item>
+        <item>West Bengal</item>
+    </array>
+</resources>
