@@ -26,6 +26,7 @@ public class FirebasePushNotification extends FirebaseMessagingService {
         String flag = remoteMessage.getData().get("flag");
         String data = remoteMessage.getData().get("data");
 
+
         if (flag == null)
             return;
 
