@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
+import com.daphnistech.dtcskinclinic.activity.LoginActivity;
 import com.daphnistech.dtcskinclinic.activity.MainActivity;
 import com.daphnistech.dtcskinclinic.activity.MyPatientDoctorList;
 import com.daphnistech.dtcskinclinic.activity.ViewPatientDetails;
@@ -41,9 +42,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MyAccount extends Fragment {
-    TextView name, mobile, transactions, doctors;
+    TextView name, mobile, transactions, doctors, profile;
     LinearLayout myAppointment, logout, myTransactions, myAccount, healthStatus, myDoctors;
     CircleImageView photo;
+    View logoutView, paymentView;
 
     public MyAccount() {
         // Required empty public constructor
@@ -71,12 +73,23 @@ public class MyAccount extends Fragment {
         photo = view.findViewById(R.id.photo);
         myAppointment = view.findViewById(R.id.myAppointmentsLayout);
         logout = view.findViewById(R.id.logOutLayout);
+        logoutView = view.findViewById(R.id.logoutView);
+        paymentView = view.findViewById(R.id.paymentView);
         transactions = view.findViewById(R.id.transactions);
         doctors = view.findViewById(R.id.doctors);
+        profile = view.findViewById(R.id.profileLogin);
         myTransactions = view.findViewById(R.id.transactionLayout);
         healthStatus = view.findViewById(R.id.diseaseLayout);
         myAccount = view.findViewById(R.id.profileLayout);
         myDoctors = view.findViewById(R.id.myDoctorsLayout);
+
+        if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getUserID() == 0) {
+            profile.setText("Login");
+            logout.setVisibility(View.GONE);
+            logoutView.setVisibility(View.GONE);
+            paymentView.setVisibility(View.GONE);
+            new PreferenceManager(getActivity(), Constant.USER_DETAILS).setName("Hello Guest");
+        }
 
         if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getLoginType().equals(Constant.DOCTOR)) {
             healthStatus.setVisibility(View.GONE);
@@ -106,9 +119,10 @@ public class MyAccount extends Fragment {
 
         myAccount.setOnClickListener(v -> {
             Toast.makeText(getActivity(), "Panel is under construction", Toast.LENGTH_SHORT).show();
-            if (new PreferenceManager(getActivity(),Constant.USER_DETAILS).getLoginType().equals(Constant.PATIENT))
-                startActivity(new Intent(getActivity(), ViewPatientDetails.class).putExtra("id",new PreferenceManager(getActivity(),Constant.USER_DETAILS).getUserID()));
-
+            if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getUserID() != 0) {
+                if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getLoginType().equals(Constant.PATIENT))
+                    startActivity(new Intent(getActivity(), ViewPatientDetails.class).putExtra("id", new PreferenceManager(getActivity(), Constant.USER_DETAILS).getUserID()));
+            } else startActivity(new Intent(getActivity(), LoginActivity.class));
         });
 
         healthStatus.setOnClickListener(v -> {
@@ -117,8 +131,8 @@ public class MyAccount extends Fragment {
     }
 
     private void putStatus() {
-        CustomProgressBar.showProgressBar(getActivity(),false);
-        PreferenceManager preferenceManager = new PreferenceManager(getActivity(),Constant.USER_DETAILS);
+        CustomProgressBar.showProgressBar(getActivity(), false);
+        PreferenceManager preferenceManager = new PreferenceManager(getActivity(), Constant.USER_DETAILS);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UserInterface.BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
@@ -129,7 +143,7 @@ public class MyAccount extends Fragment {
         String type = preferenceManager.getLoginType();
         boolean status = Constant.OFFLINE;
 
-        Call<String> call = api.putStatus(id, type , String.valueOf(status));
+        Call<String> call = api.putStatus(id, type, String.valueOf(status));
 
         call.enqueue(new Callback<String>() {
             @Override

@@ -25,6 +25,7 @@ import androidx.fragment.app.FragmentManager;
 import com.airbnb.lottie.LottieAnimationView;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
+import com.daphnistech.dtcskinclinic.activity.LoginActivity;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
 import com.daphnistech.dtcskinclinic.helper.PolicyOpener;
@@ -97,10 +98,15 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
 
         tnc.setOnClickListener(v -> PolicyOpener.showPolicy(getActivity(), true, UserInterface.BASE_URL + "refund_policy.html"));
         submit.setOnClickListener(v -> {
-            if (isSelected)
-                addTransaction();
-            else
-                Toast.makeText(getActivity(), "Please Select Date for Appointment", Toast.LENGTH_SHORT).show();
+            if (preferenceManager.getUserID() != 0) {
+                if (isSelected)
+                    addTransaction();
+                else
+                    Toast.makeText(getActivity(), "Please Select Date for Appointment", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Please Login First", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+            }
         });
 
         myAppointments.setOnClickListener(v -> {

@@ -99,6 +99,7 @@
                         android:src="@drawable/ic_baseline_person_outline_24" />
 
                     <TextView
+                        android:id="@+id/profileLogin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
@@ -302,6 +303,7 @@
                 </LinearLayout>
 
                 <View
+                    android:id="@+id/paymentView"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="20dp"
@@ -340,6 +342,7 @@
                 </LinearLayout>
 
                 <View
+                    android:id="@+id/logoutView"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="20dp"

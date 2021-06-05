@@ -7,10 +7,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -25,9 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.transition.Slide;
-import androidx.transition.Transition;
-import androidx.transition.TransitionManager;
 
 import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
@@ -53,19 +48,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-import ss.anoop.awesometextinputlayout.AwesomeTextInputLayout;
 
 public class ViewPatientDetails extends AppCompatActivity implements View.OnClickListener {
-    TextView name, age, address, gender, drugRemarks;
-    EditText editName, editAge, editAddress, editPin, editDrugRemarks;
-    ImageView diabetes, hyperTension, thyroidProblem, drugAllergy, skinDisease, cosmetology, hairProblem, sexDisease;
+    TextView name, age, address, gender;
+    EditText editName, editAge, editAddress, editPin;
+    ImageView skinDisease, cosmetology, hairProblem, sexDisease;
     ImageView editSkinDisease, editCosmetology, editHairProblem, editSexDisease;
-    TextView editDiabetes, editHyperTension, editThyroidProblem, editDrugAllergy;
     ImageView skinDiseaseContinue, cosmetologyContinue, hairProblemContinue, sexDiseaseContinue;
-    AwesomeTextInputLayout remarksLayout;
-    ConstraintLayout drugRemarksLayout, skinDiseaseLayout, cosmetologyLayout, hairProblemLayout, sexDiseaseLayout;
+    ConstraintLayout skinDiseaseLayout, cosmetologyLayout, hairProblemLayout, sexDiseaseLayout;
     ConstraintLayout editSkinDiseaseLayout, editCosmetologyLayout, editHairProblemLayout, editSexDiseaseLayout;
-    boolean checkDiabetes = false, checkHyperTension = false, checkThyroidProblem = false, checkDrugAllergy = false;
     RadioButton male, female, others;
     CircleImageView profilePic, editProfilePic;
     ArrayAdapter<String> accountAdapter;
@@ -90,17 +81,6 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
             window.setStatusBarColor(getResources().getColor(R.color.loginChooser));
         }
         initViews();
-
-        editDiabetes.setOnClickListener(v -> checkDiabetes = checkText(editDiabetes, checkDiabetes));
-
-        editHyperTension.setOnClickListener(v -> checkHyperTension = checkText(editHyperTension, checkHyperTension));
-
-        editThyroidProblem.setOnClickListener(v -> checkThyroidProblem = checkText(editThyroidProblem, checkThyroidProblem));
-
-        editDrugAllergy.setOnClickListener(v -> {
-            toggle(!checkDrugAllergy);
-            checkDrugAllergy = checkText(editDrugAllergy, checkDrugAllergy);
-        });
 
         editProfile.setOnClickListener(v -> {
             viewPanel.setVisibility(View.GONE);
@@ -162,9 +142,9 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
         RequestBody name = RequestBody.create(MediaType.parse("text/plain"), editName.getText().toString());
         RequestBody age = RequestBody.create(MediaType.parse("text/plain"), editAge.getText().toString());
         RequestBody gender = RequestBody.create(MediaType.parse("text/plain"), male.isChecked() ? Constant.MALE : female.isChecked() ? Constant.FEMALE : Constant.OTHERS);
-        RequestBody address = RequestBody.create(MediaType.parse("text/plain"), editAddress.getText().toString());
+        RequestBody address = RequestBody.create(MediaType.parse("text/plain"), editAddress.getText().toString().isEmpty() ? "N/A" : editAddress.getText().toString());
         RequestBody state = RequestBody.create(MediaType.parse("text/plain"), stateArray[spinner.getSelectedItemPosition()]);
-        RequestBody pin = RequestBody.create(MediaType.parse("text/plain"), editPin.getText().toString());
+        RequestBody pin = RequestBody.create(MediaType.parse("text/plain"), editPin.getText().toString().isEmpty() ? "N/A" : editPin.getText().toString());
         Call<String> call = api.updatePatient(patient_id, mobile, name, age, gender, address, state, pin, image);
 
         call.enqueue(new Callback<String>() {
@@ -178,7 +158,7 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
                             JSONObject jsonObject = new JSONObject(jsonResponse);
                             if (!jsonObject.getBoolean("error")) {
                                 CustomProgressBar.hideProgressBar();
-                                Toast.makeText(context, "Patients Details Updated, Updating Patient's Diseases....", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Patients Details Updated", Toast.LENGTH_SHORT).show();
                                 getPatientDetails();
                             } else {
                                 Toast.makeText(context, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
@@ -215,13 +195,7 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
         if (editName.getText().toString().isEmpty())
             return false;
 
-        if (editAge.getText().toString().isEmpty())
-            return false;
-
-        if (editAddress.getText().toString().isEmpty())
-            return false;
-
-        return !editPin.getText().toString().isEmpty();
+        return !editAge.getText().toString().isEmpty();
     }
 
     private void getPatientDetails() {
@@ -342,6 +316,9 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
                 preferenceManager.setPic3(currentDisease.getString("third_photo"));
                 preferenceManager.setAffectedArea(currentDisease.getString("affected_area"));
                 preferenceManager.setPDF(currentDisease.getString("pdf"));
+                editPanel.setVisibility(View.GONE);
+                editProfile.setVisibility(View.VISIBLE);
+                viewPanel.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -366,15 +343,6 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
         address = findViewById(R.id.address);
         editAddress = findViewById(R.id.editAddress);
         editPin = findViewById(R.id.editPin);
-        diabetes = findViewById(R.id.diabetesImage);
-        editDiabetes = findViewById(R.id.editDiabetes);
-        hyperTension = findViewById(R.id.hyperTensionImage);
-        editHyperTension = findViewById(R.id.editHyperTension);
-        thyroidProblem = findViewById(R.id.thyroidProblemImage);
-        editThyroidProblem = findViewById(R.id.editThyroidProblem);
-        drugAllergy = findViewById(R.id.drugAllergyImage);
-        editDrugAllergy = findViewById(R.id.editDrugAllergy);
-        remarksLayout = findViewById(R.id.remarksLayout);
         skinDisease = findViewById(R.id.skinDiseaseImage);
         editSkinDisease = findViewById(R.id.editSkinDiseaseImage);
         cosmetology = findViewById(R.id.cosmetologyImage);
@@ -383,9 +351,6 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
         editHairProblem = findViewById(R.id.editHairProblemImage);
         sexDisease = findViewById(R.id.sexProblemImage);
         editSexDisease = findViewById(R.id.editSexProblemImage);
-        drugRemarks = findViewById(R.id.drugRemarks);
-        editDrugRemarks = findViewById(R.id.editRemarks);
-        drugRemarksLayout = findViewById(R.id.drugRemarkLayout);
         skinDiseaseLayout = findViewById(R.id.skinDisease);
         editSkinDiseaseLayout = findViewById(R.id.editSkinDisease);
         cosmetologyLayout = findViewById(R.id.cosmetology);
@@ -460,27 +425,6 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    @SuppressWarnings("deprecation")
-    private boolean checkText(TextView textView, boolean check) {
-        if (check) {
-            textView.setBackground(getResources().getDrawable(R.drawable.textview_round));
-        } else {
-            textView.setBackground(getResources().getDrawable(R.drawable.text_view_round_selected));
-        }
-        return !check;
-    }
-
-    private void toggle(boolean show) {
-        ViewGroup parent = findViewById(R.id.diseaseLayout2);
-        Transition transition = new Slide(Gravity.TOP);
-        transition.setDuration(1500);
-        transition.addTarget(R.id.remarksLayout);
-
-        TransitionManager.beginDelayedTransition(parent, transition);
-        remarksLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -497,6 +441,10 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
         editHairProblem.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_cancel__red_24));
         sexDisease.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_cancel__red_24));
         editSexDisease.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_cancel__red_24));
+        skinDiseaseContinue.setVisibility(View.GONE);
+        cosmetologyContinue.setVisibility(View.GONE);
+        hairProblemContinue.setVisibility(View.GONE);
+        sexDiseaseContinue.setVisibility(View.GONE);
     }
 
     @Override

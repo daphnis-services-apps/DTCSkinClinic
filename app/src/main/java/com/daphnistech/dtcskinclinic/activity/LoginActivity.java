@@ -12,8 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -29,16 +27,7 @@ import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.PolicyOpener;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
@@ -66,7 +55,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     EditText mobile;
     ImageView verifyIcon;
     ProgressBar progressBar, progressBarOTP;
-    TextView submit, submitOTP, confirmText, resendOTP, tnc, tos;
+    TextView submit, submitOTP, confirmText, resendOTP, tnc, tos, withoutLogin;
     ConstraintLayout mobileLayout, OTPLayout;
     OtpTextView otpTextView;
     Context context;
@@ -98,6 +87,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         resendOTP.setOnClickListener(this);
         tnc.setOnClickListener(this);
         tos.setOnClickListener(this);
+        withoutLogin.setOnClickListener(this);
 
         mobile.addTextChangedListener(new TextWatcher() {
             @Override
@@ -197,6 +187,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         otpTextView = findViewById(R.id.otp_view);
         confirmText = findViewById(R.id.confirmText);
         resendOTP = findViewById(R.id.resendOTP);
+        withoutLogin = findViewById(R.id.withoutLogin);
         tnc = findViewById(R.id.tnc);
         tos = findViewById(R.id.tos);
     }
@@ -217,6 +208,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 progressBar.setIndeterminate(true);
                 progressBar.setVisibility(View.VISIBLE);
                 submit.setVisibility(View.GONE);
+                withoutLogin.setVisibility(View.GONE);
                 new Handler().postDelayed(() -> {
                 }, 1500);
                 updateUser();
@@ -232,7 +224,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else if (v == tnc) {
             PolicyOpener.showPolicy(context,true, UserInterface.BASE_URL + "privacy_policy.html");
         } else if (v == tos) {
-            PolicyOpener.showPolicy(context,true, UserInterface.BASE_URL + "terms_of_services.html");
+            PolicyOpener.showPolicy(context, true, UserInterface.BASE_URL + "terms_of_services.html");
+        } else if (v == withoutLogin) {
+            preferenceManager.setLoggedIn(true);
+            if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
+                startActivity(new Intent(context, PatientDashboard.class));
+            } else {
+                startActivity(new Intent(context, DoctorDashboard.class));
+            }
+            finish();
         }
     }
 
