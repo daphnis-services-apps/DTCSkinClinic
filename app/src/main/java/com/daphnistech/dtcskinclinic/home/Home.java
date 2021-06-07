@@ -1,6 +1,7 @@
 package com.daphnistech.dtcskinclinic.home;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -75,6 +76,7 @@ public class Home extends Fragment {
             getActivity().getWindow().getDecorView().setSystemUiVisibility(getActivity().getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             window.setStatusBarColor(getResources().getColor(R.color.loginChooser));
         }
+
         initViews(view);
         setAdvert();
         setDoctors();
@@ -126,7 +128,7 @@ public class Home extends Fragment {
                                 JSONArray jsonArray = jsonObject.getJSONArray("doctors");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject doctors = new JSONObject(jsonArray.getString(i));
-                                    doctorsList.add(new Doctors(doctors.getInt("doctor_id"), doctors.getString("name"), doctors.getString("designation"), "4.5", doctors.getString("consultation_fees")));
+                                    doctorsList.add(new Doctors(doctors.getInt("doctor_id"), doctors.getString("name"), doctors.getString("photo"), doctors.getString("designation"), "4.5", doctors.getString("consultation_fees")));
                                 }
                                 doctorsAdapter.notifyDataSetChanged();
                                 CustomProgressBar.hideProgressBar();
@@ -136,21 +138,26 @@ public class Home extends Fragment {
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            CustomProgressBar.hideProgressBar();
                         }
                         //Parsing the JSON
 
                     } else {
                         Log.i("onEmptyResponse", "Returned empty response");
-
+                        Toast.makeText(getActivity(), "Returned empty response", Toast.LENGTH_SHORT).show();
+                        CustomProgressBar.hideProgressBar();
                     }
                 } else if (response.errorBody() != null) {
-
+                    Toast.makeText(getActivity(), response.message(), Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
-
+                Toast.makeText(getActivity(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                CustomProgressBar.hideProgressBar();
             }
         });
     }
@@ -159,7 +166,7 @@ public class Home extends Fragment {
         final int speedScroll = 100;
         final Handler handler = new Handler();
         final Runnable runnable = new Runnable() {
-            int count = doctorsList.size();
+            final int count = doctorsList.size();
             @Override
             public void run() {
                 /*if(count >=0){
@@ -211,5 +218,28 @@ public class Home extends Fragment {
     public void getCurrentFragment(FragmentActivity context) {
         assert context.getSupportFragmentManager() != null;
         context.getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ConfirmAppointment()).addToBackStack("home").commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getView().setOnKeyListener((v, keyCode, event) -> {
+
+            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                // handle back button's click listener
+                Dialog dialog = new Dialog(context);
+                // Removing the features of Normal Dialogs
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.dialog_confirm_exit);
+                dialog.setCancelable(true);
+                dialog.show();
+
+                dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> getActivity().finish());
+                dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
+
+                return true;
+            }
+            return false;
+        });
     }
 }

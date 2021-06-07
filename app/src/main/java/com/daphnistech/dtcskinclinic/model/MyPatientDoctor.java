@@ -4,13 +4,15 @@ public class MyPatientDoctor {
     int id;
     int appointmentId;
     String name;
+    String photo;
     String title;
     String appointmentStatus;
 
-    public MyPatientDoctor(int id, int appointmentId, String name, String title, String appointmentStatus) {
+    public MyPatientDoctor(int id, int appointmentId, String name, String photo, String title, String appointmentStatus) {
         this.id = id;
         this.appointmentId = appointmentId;
         this.name = name;
+        this.photo = photo;
         this.title = title;
         this.appointmentStatus = appointmentStatus;
     }
@@ -37,6 +39,14 @@ public class MyPatientDoctor {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getTitle() {

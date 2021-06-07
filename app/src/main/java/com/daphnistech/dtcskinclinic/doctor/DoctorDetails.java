@@ -2,6 +2,7 @@ package com.daphnistech.dtcskinclinic.doctor;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -32,6 +34,12 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,6 +47,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class DoctorDetails extends Fragment {
+    public CircleImageView profilePic;
     EditText name, age, designation, consultationFees;
     TextView next;
     RadioButton male, female, others;
@@ -86,10 +95,17 @@ public class DoctorDetails extends Fragment {
             }
         });
 
+        profilePic.setOnClickListener(v -> ImagePicker.Companion.with(getActivity())
+                .crop()
+                .galleryOnly()
+                .compress(256)            //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080)//Final image resolution will be less than 1080 x 1080(Optional)
+                .start());
+
     }
 
     private void sendToDashboard() {
-        CustomProgressBar.showProgressBar(getActivity(),false);
+        CustomProgressBar.showProgressBar(getActivity(), false);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UserInterface.BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
@@ -97,8 +113,30 @@ public class DoctorDetails extends Fragment {
 
         UserInterface api = retrofit.create(UserInterface.class);
 
+        MultipartBody.Part image;
+        if (!preferenceManager.getProfileImage().equals("")) {
+            File file = new File(preferenceManager.getProfileImage());
+            // Create a request body with file and image media type
+            RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+            // Create MultipartBody.Part using file request-body,file name and part name
+            image = MultipartBody.Part.createFormData("image", file.getName(), fileReqBody);
+        } else {
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
+            image = MultipartBody.Part.createFormData("image", "", requestBody);
+        }
+        //Create request body with text description and text media type
+        RequestBody mobile = RequestBody.create(MediaType.parse("text/plain"), preferenceManager.getMobile());
+        RequestBody name = RequestBody.create(MediaType.parse("text/plain"), this.name.getText().toString());
+        RequestBody age = RequestBody.create(MediaType.parse("text/plain"), this.age.getText().toString());
+        RequestBody gender = RequestBody.create(MediaType.parse("text/plain"), male.isChecked() ? Constant.MALE : female.isChecked() ? Constant.FEMALE : Constant.OTHERS);
+        RequestBody designation = RequestBody.create(MediaType.parse("text/plain"), this.designation.getText().toString());
+        RequestBody consultationFees = RequestBody.create(MediaType.parse("text/plain"), this.consultationFees.getText().toString());
+        RequestBody isOnline = RequestBody.create(MediaType.parse("text/plain"), preferenceManager.isOnline());
+        RequestBody fcmToken = RequestBody.create(MediaType.parse("text/plain"), token);
+        @SuppressLint("HardwareIds") RequestBody deviceToken = RequestBody.create(MediaType.parse("text/plain"), Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID));
+
         //getting API Call
-        @SuppressLint("HardwareIds") Call<String> call = api.loginDoctor(name.getText().toString(), preferenceManager.getMobile(), age.getText().toString(), male.isChecked() ? Constant.MALE : female.isChecked() ? Constant.FEMALE : Constant.OTHERS, designation.getText().toString(), consultationFees.getText().toString(), token, Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID));
+        @SuppressLint("HardwareIds") Call<String> call = api.loginDoctor(name, mobile, age, gender, designation, consultationFees, isOnline, fcmToken, deviceToken, image);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -150,8 +188,10 @@ public class DoctorDetails extends Fragment {
     }
 
     private void setPreferences(JSONObject user) throws JSONException {
+        preferenceManager.setUserID(user.getInt("doctor_id"));
         preferenceManager.setName(user.getString("name"));
         preferenceManager.setAge(user.getString("age"));
+        preferenceManager.setProfileImage(user.getString("image"));
         preferenceManager.setGender(user.getString("gender"));
         preferenceManager.setDesignation(user.getString("designation"));
         preferenceManager.setConsultationFees(user.getString("consultation_fees"));
@@ -171,13 +211,16 @@ public class DoctorDetails extends Fragment {
         male = view.findViewById(R.id.male);
         female = view.findViewById(R.id.female);
         others = view.findViewById(R.id.others);
+        profilePic = view.findViewById(R.id.profilePic);
     }
 
     private void settingValues() {
         preferenceManager = new PreferenceManager(getActivity(), Constant.USER_DETAILS);
         name.setText(preferenceManager.getName());
         age.setText(preferenceManager.getAge());
-
+        if (preferenceManager.getProfileImage().isEmpty())
+            profilePic.setImageResource(R.drawable.doctor_plus);
+        else profilePic.setImageURI(Uri.parse(preferenceManager.getProfileImage()));
         switch (preferenceManager.getGender()) {
             case "male":
                 male.setChecked(true);

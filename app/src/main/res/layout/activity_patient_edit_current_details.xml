@@ -374,6 +374,45 @@
 
                 </RelativeLayout>
 
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/affectedAreaLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/problemLayout">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/viewArea"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:paddingHorizontal="10dp"
+                            android:text="View Affected Area of the body"
+                            android:textColor="@color/red"
+                            android:textSize="15sp"
+                            android:visibility="gone" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="5dp"
+                            android:text="View Affected Area of the body"
+                            android:textColor="@color/red"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
                 <RelativeLayout
                     android:id="@+id/commentsLayout"
                     android:layout_width="match_parent"
@@ -382,7 +421,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@color/white"
                     android:orientation="horizontal"
-                    app:layout_constraintTop_toBottomOf="@id/problemLayout">
+                    app:layout_constraintTop_toBottomOf="@id/affectedAreaLayout">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -435,8 +474,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/pdfText">
 
                     <LinearLayout

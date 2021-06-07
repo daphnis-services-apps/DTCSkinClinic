@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ public class TransactionsList extends Fragment {
     RecyclerView recyclerView;
     TextView noMessage;
     LottieAnimationView animationView;
+    ImageView back;
 
     public TransactionsList() {
         // Required empty public constructor
@@ -72,7 +74,7 @@ public class TransactionsList extends Fragment {
         transactionAdapter = new TransactionAdapter(getActivity(), transactionList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(transactionAdapter);
-
+        back.setOnClickListener(v -> getFragmentManager().popBackStackImmediate());
     }
 
     private void getTransactions() {
@@ -135,6 +137,7 @@ public class TransactionsList extends Fragment {
     }
 
     private void initViews(View view) {
+        back = view.findViewById(R.id.back);
         recyclerView = view.findViewById(R.id.transactionRecyclerView);
         noMessage = view.findViewById(R.id.noMessage);
         animationView = view.findViewById(R.id.animationView);

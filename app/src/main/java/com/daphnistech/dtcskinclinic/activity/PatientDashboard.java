@@ -1,5 +1,6 @@
 package com.daphnistech.dtcskinclinic.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,7 +9,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -20,8 +20,6 @@ import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
 import com.daphnistech.dtcskinclinic.home.Home;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
@@ -36,8 +34,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class PatientDashboard extends AppCompatActivity {
-    private Context context;
     public ChipNavigationBar chipNavigationBar;
+    private Context context;
     private PreferenceManager preferenceManager;
 
     @Override
@@ -56,8 +54,12 @@ public class PatientDashboard extends AppCompatActivity {
 
         chipNavigationBar.setItemSelected(R.id.home, true);
         //chipNavigationBar.showBadge(R.id.chat, 5);
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new Home()).commit();
+        if (preferenceManager.isFirstTimeLogin())
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new Home()).commit();
+        else {
+            preferenceManager.setFirstTimeLogin(false);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatList()).commit();
+        }
 
         chipNavigationBar.setOnItemSelectedListener(i -> {
             Fragment fragment = null;
@@ -134,5 +136,18 @@ public class PatientDashboard extends AppCompatActivity {
         if (!NotificationUtils.isAppIsInBackground(context))
             putStatus(Constant.ONLINE);
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Dialog dialog = new Dialog(context);
+        // Removing the features of Normal Dialogs
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_confirm_exit);
+        dialog.setCancelable(true);
+        dialog.show();
+
+        dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> finish());
+        dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
     }
 }

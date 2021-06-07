@@ -62,4 +62,7 @@ public class Constant {
     public static final String IMAGE = "image";
     public static final String VISIT = "visit";
     public static final String AFFECTED_AREA = "affectedArea";
+    public static final String DOCTOR_PHOTO = "doctor_photo";
+    public static final String IS_SKIPPED = "isSkipped";
+    public static final String IS_FIRST_TIME = "firstTime";
 }

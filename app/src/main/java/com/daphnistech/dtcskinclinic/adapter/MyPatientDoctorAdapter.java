@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
 import com.daphnistech.dtcskinclinic.model.MyPatientDoctor;
@@ -18,6 +19,8 @@ import com.daphnistech.dtcskinclinic.model.MyPatientDoctor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MyPatientDoctorAdapter extends RecyclerView.Adapter<MyPatientDoctorAdapter.ViewHolder> {
     Context context;
@@ -41,6 +44,7 @@ public class MyPatientDoctorAdapter extends RecyclerView.Adapter<MyPatientDoctor
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         MyPatientDoctor myPatientDoctor = myPatientDoctorList.get(position);
         holder.name.setText(myPatientDoctor.getName());
+        Glide.with(context).load(myPatientDoctor.getPhoto()).placeholder(context.getDrawable(R.drawable.doctor_plus)).into(holder.photo);
         holder.title.setText(myPatientDoctor.getTitle());
 
         holder.parentLayout.setOnClickListener(v -> context.startActivity(
@@ -62,12 +66,14 @@ public class MyPatientDoctorAdapter extends RecyclerView.Adapter<MyPatientDoctor
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, title;
         ConstraintLayout parentLayout;
+        CircleImageView photo;
 
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             title = itemView.findViewById(R.id.title);
             parentLayout = itemView.findViewById(R.id.parentLayout);
+            photo = itemView.findViewById(R.id.photo);
         }
     }
 }

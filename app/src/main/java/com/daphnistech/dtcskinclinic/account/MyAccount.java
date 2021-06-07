@@ -20,8 +20,9 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.activity.LoginActivity;
-import com.daphnistech.dtcskinclinic.activity.MainActivity;
+import com.daphnistech.dtcskinclinic.activity.LoginChooser;
 import com.daphnistech.dtcskinclinic.activity.MyPatientDoctorList;
+import com.daphnistech.dtcskinclinic.activity.ViewDoctorDetails;
 import com.daphnistech.dtcskinclinic.activity.ViewPatientDetails;
 import com.daphnistech.dtcskinclinic.appointment.MyAppointments;
 import com.daphnistech.dtcskinclinic.helper.Constant;
@@ -118,11 +119,16 @@ public class MyAccount extends Fragment {
         });
 
         myAccount.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Panel is under construction", Toast.LENGTH_SHORT).show();
             if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getUserID() != 0) {
                 if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getLoginType().equals(Constant.PATIENT))
                     startActivity(new Intent(getActivity(), ViewPatientDetails.class).putExtra("id", new PreferenceManager(getActivity(), Constant.USER_DETAILS).getUserID()));
-            } else startActivity(new Intent(getActivity(), LoginActivity.class));
+                else
+                    startActivity(new Intent(getActivity(), ViewDoctorDetails.class).putExtra("id", new PreferenceManager(getActivity(), Constant.USER_DETAILS).getUserID()));
+            } else {
+                new PreferenceManager(getActivity(), Constant.USER_DETAILS).setProfileImage("");
+                new PreferenceManager(getActivity(), Constant.USER_DETAILS).setName("");
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+            }
         });
 
         healthStatus.setOnClickListener(v -> {
@@ -158,7 +164,7 @@ public class MyAccount extends Fragment {
 
                             } else {
                                 PreferenceManager.clearAll(getActivity());
-                                getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
+                                getActivity().startActivity(new Intent(getActivity(), LoginChooser.class));
                                 getActivity().finish();
                             }
                         } catch (JSONException e) {

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
 import com.daphnistech.dtcskinclinic.helper.Constant;
@@ -22,6 +22,8 @@ import com.daphnistech.dtcskinclinic.model.Doctors;
 import com.daphnistech.dtcskinclinic.model.Patients;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
     String type;
@@ -50,22 +52,27 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         int id;
         boolean isOnline;
         int unreadCount;
+        String photo;
         if (new PreferenceManager(context, Constant.USER_DETAILS).getLoginType().equals(Constant.DOCTOR)) {
             Patients patients = patientChatList.get(position);
             appointment_id = patients.getAppointmentId();
             holder.name.setText(patients.getName());
+            Glide.with(context).load(patients.getPhoto()).placeholder(context.getDrawable(R.drawable.doctor_plus)).into(holder.photo);
             holder.designation.setText(String.format("%s Years", patients.getAge()));
             isOnline = Boolean.parseBoolean(patients.getIsOnline());
             id = patients.getPatientId();
             unreadCount = patients.getUnreadCount();
+            photo = patients.getPhoto();
         } else {
             Doctors doctors = doctorChatList.get(position);
             appointment_id = doctors.getAppointmentId();
             holder.name.setText(String.format("Dr. %s", doctors.getName()));
+            Glide.with(context).load(doctors.getPhoto()).placeholder(context.getDrawable(R.drawable.doctor_plus)).into(holder.photo);
             holder.designation.setText(doctors.getDesignation());
             isOnline = Boolean.parseBoolean(doctors.isOnline());
             id = doctors.getDoctorId();
             unreadCount = doctors.getUnreadCount();
+            photo = doctors.getPhoto();
         }
 
         holder.status.setText(isOnline ? "ONLINE" : "OFFLINE");
@@ -86,6 +93,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                                 .putExtra("name", holder.name.getText().toString())
                                 .putExtra("receiver_id", id)
                                 .putExtra("is_online", isOnline)
+                                .putExtra("profile", photo)
                                 .putExtra("appointment_status","open")
                                 .putExtra("unread_count", unreadCount)
                 )
@@ -105,6 +113,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, designation, status, count;
         ConstraintLayout parentLayout;
+        CircleImageView photo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,6 +122,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             status = itemView.findViewById(R.id.status);
             parentLayout = itemView.findViewById(R.id.parentLayout);
             count = itemView.findViewById(R.id.count);
+            photo = itemView.findViewById(R.id.photo);
         }
     }
 }

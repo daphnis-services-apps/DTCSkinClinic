@@ -1,5 +1,6 @@
 package com.daphnistech.dtcskinclinic.chat;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -160,33 +161,39 @@ public class ChatList extends Fragment {
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject doctors = new JSONObject(jsonArray.getString(i));
                                     if (preferenceManager.getLoginType().equals(Constant.DOCTOR)) {
-                                        patientChatList.add(new Patients(doctors.getInt("appointment_id"), doctors.getInt("patient_id"), doctors.getString("name"), doctors.getString("age"), doctors.getString("is_online"), doctors.getInt("unread_count")));
+                                        patientChatList.add(new Patients(doctors.getInt("appointment_id"), doctors.getInt("patient_id"), doctors.getString("name"), doctors.getString("photo"), doctors.getString("age"), doctors.getString("is_online"), doctors.getInt("unread_count")));
                                     } else {
-                                        doctorChatList.add(new Doctors(doctors.getInt("appointment_id"), doctors.getInt("doctor_id"), doctors.getString("name"), doctors.getString("designation"), doctors.getString("is_online"), doctors.getInt("unread_count")));
+                                        doctorChatList.add(new Doctors(doctors.getInt("appointment_id"), doctors.getInt("doctor_id"), doctors.getString("name"), doctors.getString("photo"), doctors.getString("designation"), doctors.getString("is_online"), doctors.getInt("unread_count")));
                                     }
                                 }
                                 chatListAdapter.notifyDataSetChanged();
                                 CustomProgressBar.hideProgressBar();
                             } else {
                                 Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                CustomProgressBar.hideProgressBar();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            CustomProgressBar.hideProgressBar();
                         }
                         //Parsing the JSON
 
                     } else {
                         Log.i("onEmptyResponse", "Returned empty response");
-
+                        Toast.makeText(getActivity(), "Returned empty response", Toast.LENGTH_SHORT).show();
+                        CustomProgressBar.hideProgressBar();
                     }
                 } else if (response.errorBody() != null) {
-
+                    Toast.makeText(getActivity(), response.message(), Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
-
+                Toast.makeText(getActivity(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                CustomProgressBar.hideProgressBar();
             }
         });
     }
@@ -242,7 +249,24 @@ public class ChatList extends Fragment {
         chatListRecyclerView.setAdapter(chatListAdapter);
 
         NotificationUtils.clearNotifications();
+
+        getView().setOnKeyListener((v, keyCode, event) -> {
+
+            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                // handle back button's click listener
+                Dialog dialog = new Dialog(getActivity());
+                // Removing the features of Normal Dialogs
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.dialog_confirm_exit);
+                dialog.setCancelable(true);
+                dialog.show();
+
+                dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> getActivity().finish());
+                dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
+
+                return true;
+            }
+            return false;
+        });
     }
-
-
 }

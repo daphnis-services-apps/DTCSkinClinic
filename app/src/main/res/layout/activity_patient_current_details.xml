@@ -465,6 +465,7 @@
                             android:text="View Affected Area of the body"
                             android:textColor="@color/red"
                             android:textSize="15sp" />
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -511,7 +512,7 @@
 
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/pdfLayout"
+                    android:id="@+id/pdfUpload"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
@@ -522,12 +523,13 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:weightSum="10">
 
                         <ImageView
-                            android:id="@+id/pdfUpload"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
+                            android:layout_weight="1"
                             android:layout_marginStart="10dp"
                             android:src="@drawable/ic_baseline_drive_folder_upload_24" />
 
@@ -537,9 +539,19 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="10dp"
+                            android:layout_weight="7"
                             android:text="No File Selected"
                             android:textColor="@color/red"
                             android:textSize="15sp" />
+
+                        <ImageView
+                            android:id="@+id/pdfCancel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|end"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_baseline_cancel__red_24"
+                            android:visibility="gone" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -552,12 +564,12 @@
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/button_custom"
                     android:gravity="center"
-                    android:text="Next/आगे बड़े"
+                    android:text="Update Disease"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/pdfLayout" />
+                    app:layout_constraintTop_toBottomOf="@id/pdfUpload" />
 
                 <TextView
                     android:id="@+id/delete"

@@ -253,12 +253,16 @@ public class ConfirmDetails extends Fragment {
     }
 
     private void forwardLoop(List<String> diseasesArray, int user_id, Context context) {
+        SavingBar.hideProgressBar();
+        SavingBar.showProgressBar(context, false);
         if (loop == diseasesArray.size()) {
             preferenceManager.setLoggedIn(true);
             context.startActivity(new Intent(context, PatientDashboard.class));
             ((AddPatient) context).finish();
             return;
         }
+        int count = loop + 1;
+        Toast.makeText(context, "Saving " + count + " out of " + diseasesArray.size() + "," + diseasesArray.get(loop) + " Details", Toast.LENGTH_SHORT).show();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UserInterface.BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
@@ -284,7 +288,7 @@ public class ConfirmDetails extends Fragment {
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pic1 = MultipartBody.Part.createFormData("file1", file.getName(), fileReqBody);
+            pic1 = MultipartBody.Part.createFormData("file1", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pic1 = MultipartBody.Part.createFormData("file1", "", requestBody);
@@ -295,7 +299,7 @@ public class ConfirmDetails extends Fragment {
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pic2 = MultipartBody.Part.createFormData("file2", file.getName(), fileReqBody);
+            pic2 = MultipartBody.Part.createFormData("file2", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pic2 = MultipartBody.Part.createFormData("file2", "", requestBody);
@@ -306,18 +310,21 @@ public class ConfirmDetails extends Fragment {
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pic3 = MultipartBody.Part.createFormData("file3", file.getName(), fileReqBody);
+            pic3 = MultipartBody.Part.createFormData("file3", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pic3 = MultipartBody.Part.createFormData("file3", "", requestBody);
         }
         MultipartBody.Part pdf;
-        if (!preferenceManager.getPic3Path().equals("")) {
-            File file = new File(preferenceManager.getPic3Path());
+        if (!preferenceManager.getPDF().equals("")) {
+            //String path = Environment.getExternalStorageDirectory().getPath()+"/";
+            // String newPath = preferenceManager.getPDF().replace("/document/primary:",path);
+            //File file = new File(newPath);
+            File file = new File(preferenceManager.getPDF());
             // Create a request body with file and image media type
-            RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+            RequestBody fileReqBody = RequestBody.create(MediaType.parse("application/pdf"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pdf = MultipartBody.Part.createFormData("file4", file.getName(), fileReqBody);
+            pdf = MultipartBody.Part.createFormData("file4", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pdf = MultipartBody.Part.createFormData("file4", "", requestBody);
@@ -328,7 +335,7 @@ public class ConfirmDetails extends Fragment {
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            affectedArea = MultipartBody.Part.createFormData("file5", file.getName(), fileReqBody);
+            affectedArea = MultipartBody.Part.createFormData("file5", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             affectedArea = MultipartBody.Part.createFormData("file5", "", requestBody);
@@ -369,7 +376,7 @@ public class ConfirmDetails extends Fragment {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 SavingBar.hideProgressBar();
             }
         });

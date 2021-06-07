@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,9 +29,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.daphnistech.dtcskinclinic.R;
+import com.daphnistech.dtcskinclinic.activity.PatientDashboard;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
@@ -38,9 +41,12 @@ import com.daphnistech.dtcskinclinic.helper.Signature;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.github.florent37.inlineactivityresult.InlineActivityResult;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -62,7 +68,8 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
     private TextView affectedArea;
     private TextView viewArea;
     private String[] spinnerArray, numberArray, weekArray, problemArray;
-    private ImageView pdfUpload;
+    private CardView pdfUpload;
+    private ImageView pdfCancel, back;
     private Spinner spinner, numberSpinner, weekSpinner, problemSpinner;
     private PreferenceManager preferenceManager;
     private View headerView;
@@ -74,6 +81,7 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
     private TextView mClear, mGetSign, mCancel;
     private Dialog dialog;
     private View view;
+    private String stringPDF;
 
     public CurrentDiseasesDetails(List<String> currentHistory, int diseaseCount) {
         this.currentHistory = currentHistory;
@@ -113,6 +121,7 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
 
         settingValues();
 
+        back.setOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStackImmediate());
         comments.setOnTouchListener((v, event) -> {
             if (comments.hasFocus()) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
@@ -145,17 +154,33 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new CurrentDiseasesDetails(currentHistory, diseaseCount + 1)).addToBackStack("disease" + diseaseCount).commit();
                 } else {
                     //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ConfirmDetails()).addToBackStack("disease" + diseaseCount).commit();
-                    new ConfirmDetails().loginPatient(getActivity());
+                    if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).isLoginSkipped()) {
+                        startActivity(new Intent(getActivity(), PatientDashboard.class));
+                        getActivity().finish();
+                    } else {
+                        new ConfirmDetails().loginPatient(getActivity());
+                    }
                 }
                 CustomProgressBar.hideProgressBar();
             }, 500);
         });
 
+        pdfCancel.setOnClickListener(v -> {
+            pdfName.setText("No File Selected");
+            pdfCancel.setVisibility(View.GONE);
+            preferenceManager.setPDF("");
+        });
+
         pdfUpload.setOnClickListener(v -> {
             isPdfChoose = true;
             new InlineActivityResult(getActivity())
-                    .startForResult(new Intent().setAction(Intent.ACTION_GET_CONTENT).setType("application/pdf"))
-                    .onSuccess(result -> pdfName.setText(result.getData().getData().getPath()))
+                    .startForResult(new Intent().setAction(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("application/pdf"))
+                    .onSuccess(result -> {
+                        stringPDF = getStringPdf(result.getData().getData());
+                        pdfName.setText("1 File Selected");
+                        preferenceManager.setPDF(result.getData().getData().toString());
+                        pdfCancel.setVisibility(View.VISIBLE);
+                    })
                     .onFail(result -> Toast.makeText(CurrentDiseasesDetails.this.getActivity(), "Failed", Toast.LENGTH_SHORT).show());
         });
 
@@ -166,6 +191,36 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
         pic1Cancel.setOnClickListener(this);
         pic2Cancel.setOnClickListener(this);
         pic3Cancel.setOnClickListener(this);
+    }
+
+    public String getStringPdf(Uri filepath) {
+        InputStream inputStream = null;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            inputStream = getActivity().getContentResolver().openInputStream(filepath);
+
+            byte[] buffer = new byte[1024];
+            byteArrayOutputStream = new ByteArrayOutputStream();
+
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        byte[] pdfByteArray = byteArrayOutputStream.toByteArray();
+
+        return Base64.encodeToString(pdfByteArray, Base64.DEFAULT);
     }
 
     private void savePath() {
@@ -215,9 +270,23 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
             new File(path + "/body" + ".PNG").delete();
             preferenceManager.setAffectedArea("");
         }
+
+        if (!preferenceManager.getPDF().equals("")) {
+            try (FileOutputStream fos = new FileOutputStream(path + "/report.pdf")) {
+                // To be short I use a corrupted PDF string, so make sure to use a valid one if you want to preview the PDF file
+                byte[] decoder = Base64.decode(stringPDF, Base64.CRLF);
+
+                fos.write(decoder);
+                System.out.println("PDF File Saved");
+                preferenceManager.setPDF(path + "/report.pdf");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else new File(path + "/report.pdf").delete();
     }
 
     private void initViews(View view) {
+        back = view.findViewById(R.id.back);
         pic1Layout = view.findViewById(R.id.pic1Layout);
         pic2Layout = view.findViewById(R.id.pic2Layout);
         pic3Layout = view.findViewById(R.id.pic3Layout);
@@ -232,6 +301,7 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
         next = view.findViewById(R.id.submit);
         imageView = view.findViewById(R.id.imageView);
         pdfUpload = view.findViewById(R.id.pdfUpload);
+        pdfCancel = view.findViewById(R.id.pdfCancel);
         pdfName = view.findViewById(R.id.pdfName);
         spinner = view.findViewById(R.id.spinner);
         numberSpinner = view.findViewById(R.id.numberSpinner);

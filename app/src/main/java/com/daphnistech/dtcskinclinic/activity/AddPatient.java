@@ -62,9 +62,7 @@ public class AddPatient extends AppCompatActivity {
                 CurrentDiseasesDetails currentDiseasesDetails = (CurrentDiseasesDetails) fragment;
                 preferenceManager = new PreferenceManager(context, currentDiseasesDetails.diseaseName);
                 if (currentDiseasesDetails.isPdfChoose) {
-                    currentDiseasesDetails.pdfName.setText(data.getData().getPath());
                     currentDiseasesDetails.isPdfChoose = false;
-                    preferenceManager.setPDF(data.getData().getPath());
                 } else {
                     Uri fileUri = data.getData();
                     if (preferenceManager.getSteps() == 3) {

@@ -36,6 +36,7 @@ import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.adapter.ConversationAdapter;
 import com.daphnistech.dtcskinclinic.firebase.NotificationUtils;
@@ -60,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -75,7 +77,7 @@ import static com.daphnistech.dtcskinclinic.helper.DateHelper.getDateDifference;
 @SuppressWarnings("deprecation")
 public class ConversationActivity extends AppCompatActivity implements TextWatcher, View.OnClickListener {
     public static boolean send = true;
-    ImageView sendButton, imageButton, online, options;
+    ImageView sendButton, imageButton, online, options, back;
     EditText message;
     Context context;
     List<Conversation> conversationList;
@@ -93,6 +95,7 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
     private int unread_count;
     private String appointment_status;
     private LinearLayoutManager layoutManager;
+    private CircleImageView profile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,6 +121,8 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         message.addTextChangedListener(this);
         imageButton.setOnClickListener(this);
         sendButton.setOnClickListener(this);
+
+        back.setOnClickListener(v -> finish());
 
         recyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             if (bottom < oldBottom) {
@@ -313,7 +318,9 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         imageButton = findViewById(R.id.imageButton);
         recyclerView = findViewById(R.id.conversationRecyclerView);
         noMessage = findViewById(R.id.noMessage);
+        profile = findViewById(R.id.profile);
         name = findViewById(R.id.name);
+        back = findViewById(R.id.back);
         online = findViewById(R.id.online);
         animationView = findViewById(R.id.animationView);
         date = findViewById(R.id.date);
@@ -324,6 +331,7 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         patientMarkClosedText = findViewById(R.id.patientMarkClosedText);
         markClosedOrOpen = findViewById(R.id.markClosed);
 
+        Glide.with(context).load(getIntent().getStringExtra("profile")).placeholder(getDrawable(R.drawable.doctor_plus)).into(profile);
         name.setText(getIntent().getStringExtra("name"));
         receiver_id = getIntent().getIntExtra("receiver_id", 0);
         unread_count = getIntent().getIntExtra("unread_count", 0);

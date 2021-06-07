@@ -2,22 +2,19 @@ package com.daphnistech.dtcskinclinic.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.appointment.ChooseDoctorForAppointment;
-import com.daphnistech.dtcskinclinic.appointment.SelectAppointmentDate;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.home.Home;
@@ -25,6 +22,8 @@ import com.daphnistech.dtcskinclinic.model.Doctors;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DoctorsAdapter extends RecyclerView.Adapter<DoctorsAdapter.ViewHolder> {
     Context context;
@@ -62,6 +61,7 @@ public class DoctorsAdapter extends RecyclerView.Adapter<DoctorsAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Doctors doctors = doctorsList.get(position);
         holder.name.setText(String.format("Dr. %s", doctors.getName()));
+        Glide.with(context).load(doctors.getPhoto()).placeholder(context.getDrawable(R.drawable.doctor_plus)).into(holder.photo);
         holder.designation.setText(doctors.getDesignation());
         holder.rating.setText(doctors.getRating());
         if (holder.consultationFees != null) {
@@ -90,6 +90,7 @@ public class DoctorsAdapter extends RecyclerView.Adapter<DoctorsAdapter.ViewHold
                         PreferenceManager preferenceManager = new PreferenceManager(context, Constant.USER_DETAILS);
                         preferenceManager.setDoctorId(doctors.getDoctorId());
                         preferenceManager.setDoctorName(doctors.getName());
+                        preferenceManager.setDoctorPhoto(doctors.getPhoto());
                         preferenceManager.setDesignation(doctors.getDesignation());
                         preferenceManager.setConsultationFees(doctors.getConsultationFees());
                         new ChooseDoctorForAppointment().getCurrentFragment((FragmentActivity) context);
@@ -103,6 +104,7 @@ public class DoctorsAdapter extends RecyclerView.Adapter<DoctorsAdapter.ViewHold
                         PreferenceManager preferenceManager = new PreferenceManager(context, Constant.USER_DETAILS);
                         preferenceManager.setDoctorId(doctors.getDoctorId());
                         preferenceManager.setDoctorName(doctors.getName());
+                        preferenceManager.setDoctorPhoto(doctors.getPhoto());
                         preferenceManager.setDesignation(doctors.getDesignation());
                         preferenceManager.setConsultationFees(doctors.getConsultationFees());
                         new Home().getCurrentFragment((FragmentActivity) context);
@@ -130,6 +132,7 @@ public class DoctorsAdapter extends RecyclerView.Adapter<DoctorsAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, designation, rating, consultationFees, bookNow, fees;
         ConstraintLayout parentLayout;
+        CircleImageView photo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -140,6 +143,7 @@ public class DoctorsAdapter extends RecyclerView.Adapter<DoctorsAdapter.ViewHold
             fees = itemView.findViewById(R.id.fees);
             parentLayout = itemView.findViewById(R.id.parentLayout);
             bookNow = itemView.findViewById(R.id.bookNow);
+            photo = itemView.findViewById(R.id.photo);
         }
     }
 }

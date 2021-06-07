@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ public class SelectAppointmentDate extends Fragment implements View.OnClickListe
     TextView name, designation, offlineBook, onlineBook;
     boolean checkOffline = false, checkOnline = false;
     PreferenceManager preferenceManager;
+    ImageView back;
 
     public SelectAppointmentDate() {
         // Required empty public constructor
@@ -42,6 +44,7 @@ public class SelectAppointmentDate extends Fragment implements View.OnClickListe
         name.setText(String.format("Dr. %s", preferenceManager.getDoctorName()));
         designation.setText(preferenceManager.getDesignation());
 
+        back.setOnClickListener(v -> getFragmentManager().popBackStackImmediate());
         continueBook.setOnClickListener(this);
         offlineBook.setOnClickListener(this);
         onlineBook.setOnClickListener(this);
@@ -54,6 +57,7 @@ public class SelectAppointmentDate extends Fragment implements View.OnClickListe
         offlineBook = view.findViewById(R.id.offlineBook);
         onlineBook = view.findViewById(R.id.onlineBook);
         continueBook = view.findViewById(R.id.continueBook);
+        back = view.findViewById(R.id.back);
     }
 
     @Override

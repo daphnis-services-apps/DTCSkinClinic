@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
 import com.daphnistech.dtcskinclinic.activity.LoginActivity;
@@ -58,6 +60,7 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
     PreferenceManager preferenceManager;
     ConstraintLayout checkLayout, confirmLayout;
     LottieAnimationView selectDate;
+    ImageView back;
 
     int day, month, year, hour, minute;
     int myday, myMonth, myYear, myHour, myMinute;
@@ -81,6 +84,7 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
         initViews(view);
 
         preferenceManager = new PreferenceManager(getActivity(), Constant.USER_DETAILS);
+        Glide.with(getActivity()).load(preferenceManager.getDoctorPhoto()).placeholder(getActivity().getDrawable(R.drawable.doctor_plus)).into(photo);
         name.setText(String.format("Dr. %s", preferenceManager.getDoctorName()));
         designation.setText(preferenceManager.getDesignation());
         consultationFees.setText(String.format("₹ %s", preferenceManager.getConsultationFees()));
@@ -112,6 +116,8 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
         myAppointments.setOnClickListener(v -> {
             getActivity().getSupportFragmentManager().popBackStack("myAppointments", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         });
+
+        back.setOnClickListener(v -> getFragmentManager().popBackStackImmediate());
     }
 
     private void addTransaction() {
@@ -258,6 +264,7 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
         confirmLayout = view.findViewById(R.id.confirmLayout);
         myAppointments = view.findViewById(R.id.history);
         tnc = view.findViewById(R.id.tnc);
+        back = view.findViewById(R.id.back);
     }
 
     @Override

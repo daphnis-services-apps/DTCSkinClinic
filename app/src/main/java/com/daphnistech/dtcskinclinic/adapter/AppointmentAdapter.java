@@ -11,11 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.model.Appointments;
-import com.daphnistech.dtcskinclinic.model.Doctors;
 
 import java.util.List;
 
@@ -48,6 +48,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             holder.name.setText(appointments.getName());
             holder.designation.setText(String.format("%s Years", appointments.getDesignation()));
         }
+        Glide.with(context).load(appointments.getPhoto()).placeholder(context.getDrawable(R.drawable.doctor_plus)).into(holder.photo);
         holder.fees.setText(String.format("\u20B9 %s", appointments.getTransactionAmount()));
         holder.mode.setText(String.valueOf(appointments.getAppointmentId()) );
         holder.status.setText(appointments.getAppointmentStatus());
@@ -74,6 +75,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             fees = itemView.findViewById(R.id.fees);
             mode = itemView.findViewById(R.id.mode);
             status = itemView.findViewById(R.id.status);
+            photo = itemView.findViewById(R.id.photo);
         }
     }
 }

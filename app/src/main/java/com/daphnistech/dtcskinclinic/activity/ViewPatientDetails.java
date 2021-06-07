@@ -68,6 +68,7 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
     private String[] stateArray;
     private Spinner spinner;
     private Uri fileUri;
+    private ImageView back;
 
     @SuppressLint("ClickableViewAccessibility")
     @SuppressWarnings("deprecation")
@@ -81,6 +82,8 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
             window.setStatusBarColor(getResources().getColor(R.color.loginChooser));
         }
         initViews();
+
+        back.setOnClickListener(v -> finish());
 
         editProfile.setOnClickListener(v -> {
             viewPanel.setVisibility(View.GONE);
@@ -328,6 +331,7 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
 
     private void initViews() {
         context = ViewPatientDetails.this;
+        back = findViewById(R.id.back);
         editProfile = findViewById(R.id.editProfile);
         updateProfile = findViewById(R.id.submit);
         viewPanel = findViewById(R.id.viewPanel);
@@ -375,6 +379,7 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
         spinner.setAdapter(accountAdapter);
         if (preferenceManager.getLoginType().equals(Constant.PATIENT))
             editProfile.setVisibility(View.VISIBLE);
+        else editProfile.setVisibility(View.GONE);
 
         Glide.with(this).load(preferenceManager.getProfileImage()).placeholder(R.drawable.doctor_plus).into(editProfilePic);
     }

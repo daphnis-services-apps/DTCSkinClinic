@@ -226,11 +226,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else if (v == tos) {
             PolicyOpener.showPolicy(context, true, UserInterface.BASE_URL + "terms_of_services.html");
         } else if (v == withoutLogin) {
-            preferenceManager.setLoggedIn(true);
+            preferenceManager.setLoginSkipped(true);
             if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
-                startActivity(new Intent(context, PatientDashboard.class));
+                startActivity(new Intent(context, AddPatient.class));
             } else {
-                startActivity(new Intent(context, DoctorDashboard.class));
+                startActivity(new Intent(context, AddDoctor.class));
             }
             finish();
         }

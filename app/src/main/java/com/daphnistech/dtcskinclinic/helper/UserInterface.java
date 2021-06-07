@@ -9,7 +9,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.Streaming;
 
 public interface UserInterface {
 
@@ -31,17 +30,19 @@ public interface UserInterface {
             @Field("deviceToken") String deviceToken
     );
 
-    @FormUrlEncoded
     @POST("login/doctor")
+    @Multipart
     Call<String> loginDoctor(
-            @Field("name") String name,
-            @Field("mobile") String mobile,
-            @Field("age") String age,
-            @Field("gender") String gender,
-            @Field("designation") String designation,
-            @Field("consultation_fees") String consultationFees,
-            @Field("fcm_token") String token,
-            @Field("device_token") String deviceToken
+            @Part("name") RequestBody name,
+            @Part("mobile") RequestBody mobile,
+            @Part("age") RequestBody age,
+            @Part("gender") RequestBody gender,
+            @Part("designation") RequestBody designation,
+            @Part("consultation_fees") RequestBody consultationFees,
+            @Part("is_online") RequestBody is_online,
+            @Part("fcm_token") RequestBody token,
+            @Part("device_token") RequestBody deviceToken,
+            @Part MultipartBody.Part image
     );
 
     @POST("login/patient")
@@ -71,6 +72,18 @@ public interface UserInterface {
             @Part("address") RequestBody address,
             @Part("state") RequestBody state,
             @Part("pin") RequestBody pin,
+            @Part MultipartBody.Part image);
+
+    @POST("updateDoctor")
+    @Multipart
+    Call<String> updateDoctor(
+            @Part("doctor_id") RequestBody doctor_id,
+            @Part("mobile") RequestBody mobile,
+            @Part("name") RequestBody name,
+            @Part("age") RequestBody age,
+            @Part("gender") RequestBody gender,
+            @Part("designation") RequestBody address,
+            @Part("consultation_fees") RequestBody consultation_fees,
             @Part MultipartBody.Part image);
 
     @GET("getAllDoctors")
@@ -232,5 +245,11 @@ public interface UserInterface {
     @POST("getPatientDetails")
     Call<String> getPatientDetails(
             @Field("patient_id") int patient_id
+    );
+
+    @FormUrlEncoded
+    @POST("getDoctorDetails")
+    Call<String> getDoctorDetails(
+            @Field("doctor_id") int doctor_id
     );
 }

@@ -4,12 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.core.app.NotificationCompat;
-
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -384,5 +379,29 @@ public class PreferenceManager {
 
     public String getAffectedArea() {
         return sharedPreferences.getString(Constant.AFFECTED_AREA, "");
+    }
+
+    public String getDoctorPhoto() {
+        return sharedPreferences.getString(Constant.DOCTOR_PHOTO, "");
+    }
+
+    public void setDoctorPhoto(String photo) {
+        editor.putString(Constant.DOCTOR_PHOTO, photo).apply();
+    }
+
+    public boolean isLoginSkipped() {
+        return sharedPreferences.getBoolean(Constant.IS_SKIPPED, false);
+    }
+
+    public void setLoginSkipped(boolean check) {
+        editor.putBoolean(Constant.IS_SKIPPED, check).apply();
+    }
+
+    public boolean isFirstTimeLogin() {
+        return sharedPreferences.getBoolean(Constant.IS_FIRST_TIME, true);
+    }
+
+    public void setFirstTimeLogin(boolean b) {
+        editor.putBoolean(Constant.IS_FIRST_TIME, b).apply();
     }
 }

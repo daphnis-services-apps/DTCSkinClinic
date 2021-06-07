@@ -1,26 +1,27 @@
 package com.daphnistech.dtcskinclinic.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.FileProvider;
 
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.helper.Constant;
@@ -30,6 +31,8 @@ import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -38,41 +41,46 @@ import okhttp3.Request;
 
 public class PatientEditCurrentDetails extends AppCompatActivity implements View.OnClickListener {
     private Context context;
-    private Bitmap bitmap1, bitmap2, bitmap3;
+    private Bitmap bitmap1, bitmap2, bitmap3, bitmap4;
     private ProgressBar pic1ProgressBar, pic2ProgressBar, pic3ProgressBar;
-    private CardView pic1Layout, pic2Layout, pic3Layout;
-    private ImageView pic1, pic2, pic3, image;
+    private CardView pic1Layout, pic2Layout, pic3Layout, pdfLayout;
+    private ImageView pic1, pic2, pic3, image, back;
     private String diseaseName;
-    private TextView pdfName;
-    private TextView heading ,heading1;
+    private TextView pdfName, viewArea;
+    private TextView heading, heading1;
     private TextView oldAge, comments, diseaseType, problem;
     private PreferenceManager preferenceManager;
     private View headerView;
     private RelativeLayout problemsLayout, imageView;
     private LinearLayout imageLayout;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_edit_current_details);
         initViews();
+        back.setOnClickListener(v -> finish());
         CustomProgressBar.showProgressBar(context, false);
         new Handler().postDelayed(this::settingValues, 100);
     }
 
     private void initViews() {
         context = PatientEditCurrentDetails.this;
+        back = findViewById(R.id.back);
         pic1Layout = findViewById(R.id.pic1Layout);
         pic1ProgressBar = findViewById(R.id.pic1ProgressBar);
         pic2Layout = findViewById(R.id.pic2Layout);
         pic2ProgressBar = findViewById(R.id.pic2ProgressBar);
         pic3Layout = findViewById(R.id.pic3Layout);
         pic3ProgressBar = findViewById(R.id.pic3ProgressBar);
+        pdfLayout = findViewById(R.id.pdfLayout);
         pic1 = findViewById(R.id.pic1);
         pic2 = findViewById(R.id.pic2);
         pic3 = findViewById(R.id.pic3);
         image = findViewById(R.id.image);
         imageView = findViewById(R.id.imageView);
+        viewArea = findViewById(R.id.viewArea);
         pdfName = findViewById(R.id.pdfName);
         heading = findViewById(R.id.text);
         heading1 = findViewById(R.id.text1);
@@ -83,8 +91,9 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
         headerView = findViewById(R.id.headerView);
         problemsLayout = findViewById(R.id.problemLayout);
         imageLayout = findViewById(R.id.imageLayout);
+        progressBar = findViewById(R.id.progressBar);
         diseaseName = getIntent().getStringExtra("type");
-        preferenceManager = new PreferenceManager(this,diseaseName);
+        preferenceManager = new PreferenceManager(this, diseaseName);
     }
 
     private void settingValues() {
@@ -98,6 +107,7 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
                     runOnUiThread(() -> {
                         pic1.setImageBitmap(bitmap);
                         pic1ProgressBar.setVisibility(View.GONE);
+                        pic1.setOnClickListener(PatientEditCurrentDetails.this);
                     });
                     bitmap1 = bitmap;
                 }
@@ -107,7 +117,6 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
 
                 }
             }, preferenceManager.getPic1());
-            pic1.setOnClickListener(this);
         }
         if (!preferenceManager.getPic2().equals("N/A")) {
             preferenceManager.setSteps(2);
@@ -119,6 +128,7 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
                     runOnUiThread(() -> {
                         pic2.setImageBitmap(bitmap);
                         pic2ProgressBar.setVisibility(View.GONE);
+                        pic2.setOnClickListener(PatientEditCurrentDetails.this);
                     });
                     bitmap2 = bitmap;
                 }
@@ -128,7 +138,6 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
 
                 }
             }, preferenceManager.getPic2());
-            pic2.setOnClickListener(this);
         }
         if (!preferenceManager.getPic3().equals("N/A")) {
             preferenceManager.setSteps(3);
@@ -140,6 +149,7 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
                     runOnUiThread(() -> {
                         pic3.setImageBitmap(bitmap);
                         pic3ProgressBar.setVisibility(View.GONE);
+                        pic3.setOnClickListener(PatientEditCurrentDetails.this);
                     });
                     bitmap3 = bitmap;
 
@@ -150,7 +160,72 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
 
                 }
             }, preferenceManager.getPic3());
-            pic3.setOnClickListener(this);
+        }
+
+        if (!preferenceManager.getAffectedArea().equals("N/A") && !preferenceManager.getAffectedArea().equals("")) {
+            getBitmapFromURL(new OnCalLBack() {
+                @Override
+                public void onSuccess(Bitmap bitmap) {
+                    runOnUiThread(() -> {
+                        progressBar.setVisibility(View.GONE);
+                        viewArea.setVisibility(View.VISIBLE);
+                        viewArea.setOnClickListener(PatientEditCurrentDetails.this);
+                    });
+                    bitmap4 = bitmap;
+
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+
+                }
+            }, preferenceManager.getAffectedArea());
+        } else {
+            progressBar.setVisibility(View.GONE);
+            viewArea.setVisibility(View.VISIBLE);
+            viewArea.setText("Patient doesn't select Affected Area");
+        }
+
+        if (!preferenceManager.getPDF().equals("N/A") && !preferenceManager.getPDF().equals("")) {
+            pdfName.setText("Downloading PDF");
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(preferenceManager.getPDF())
+                    .build();
+
+            client.newCall(request).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, okhttp3.Response response) {
+                    int totalBytes = (int) response.body().contentLength();
+                    InputStream inputStream = response.body().byteStream();
+                    try {
+                        String path1 = getApplicationContext().getExternalFilesDir("Me/" + diseaseName).getAbsolutePath();
+                        FileOutputStream fileOutputStream = new FileOutputStream(path1 + "/report.pdf");
+                        int loaded = 0;
+                        int read;
+                        byte[] bytes = new byte[8129];
+                        while ((read = inputStream.read(bytes)) != -1) {
+                            fileOutputStream.write(bytes, 0, read);
+                            loaded += read;
+                            float percent = ((100 * loaded) / totalBytes);
+                            runOnUiThread(() -> pdfName.setText("Downloading PDF " + percent + "%"));
+                        }
+                        runOnUiThread(() -> {
+                            pdfName.setText("View PDF Report");
+                            pdfLayout.setOnClickListener(v -> openPDF());
+                        });
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                        Toast.makeText(context, e1.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
 
         CustomProgressBar.hideProgressBar();
@@ -196,8 +271,10 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
         else problem.setText(preferenceManager.getSubProblem());
 
 
-        if (!preferenceManager.getPDF().equals("")) {
-            pdfName.setText(preferenceManager.getPDF());
+        if (preferenceManager.getPDF().equals("") || preferenceManager.getPDF().equals("N/A")) {
+            pdfName.setText("No PDF Report Attached");
+        } else {
+            pdfName.setText("Downloading PDF 0.0 %");
         }
     }
 
@@ -239,8 +316,29 @@ public class PatientEditCurrentDetails extends AppCompatActivity implements View
             if (bitmap3 != null)
                 bitmap3.compress(Bitmap.CompressFormat.JPEG, 50, bs);
         }
+        if (v.getId() == R.id.viewArea) {
+            if (bitmap4 != null)
+                bitmap4.compress(Bitmap.CompressFormat.JPEG, 50, bs);
+        }
         intent.putExtra("byteArray", bs.toByteArray());
         startActivity(intent);
+    }
+
+    private void openPDF() {
+        String path = getApplicationContext().getExternalFilesDir("Me/" + diseaseName).getAbsolutePath();
+        File file = new File(path + "/report.pdf");
+        Intent target = new Intent(Intent.ACTION_VIEW);
+        Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file);
+        target.setDataAndType(uri, "application/pdf");
+        target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Intent intent = Intent.createChooser(target, "Open File");
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            // Instruct the user to install a PDF reader here, or something
+        }
     }
 
     interface OnCalLBack {

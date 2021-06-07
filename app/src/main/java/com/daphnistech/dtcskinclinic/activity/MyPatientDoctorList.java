@@ -2,13 +2,6 @@ package com.daphnistech.dtcskinclinic.activity;
 
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +9,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.adapter.MyPatientDoctorAdapter;
@@ -98,7 +97,7 @@ public class MyPatientDoctorList extends Fragment {
                                 JSONArray jsonArray = jsonObject.getJSONArray("chatList");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject doctors = new JSONObject(jsonArray.getString(i));
-                                    myPatientDoctorList.add(new MyPatientDoctor(doctors.getInt("id"), doctors.getInt("appointment_id"), doctors.getString("name"), doctors.getString("title"), doctors.getString("appointment_status")));
+                                    myPatientDoctorList.add(new MyPatientDoctor(doctors.getInt("id"), doctors.getInt("appointment_id"), doctors.getString("name"), doctors.getString("photo"), doctors.getString("title"), doctors.getString("appointment_status")));
                                 }
                                 myPatientDoctorAdapter.notifyDataSetChanged();
                             } else {

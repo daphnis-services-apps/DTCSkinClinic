@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,15 +32,16 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
-import com.daphnistech.dtcskinclinic.helper.SavingBar;
 import com.daphnistech.dtcskinclinic.helper.Signature;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.github.florent37.inlineactivityresult.InlineActivityResult;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -65,8 +67,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class PatientCurrentDetails extends AppCompatActivity implements View.OnClickListener {
     public RelativeLayout pic1Layout, pic2Layout, pic3Layout;
     public ImageView uploadCardView;
-    public ImageView pic1, pic2, pic3, image;
-    public ImageView pic1Cancel, pic2Cancel, pic3Cancel;
+    public ImageView pic1, pic2, pic3, image, back;
+    public ImageView pic1Cancel, pic2Cancel, pic3Cancel, pdfCancel;
     public String diseaseName;
     public TextView pdfName;
     public boolean isPdfChoose;
@@ -80,7 +82,7 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
     private TextView affectedArea;
     private TextView viewArea;
     private String[] spinnerArray, numberArray, weekArray, problemArray;
-    private ImageView pdfUpload;
+    private CardView pdfUpload;
     private Spinner spinner, numberSpinner, weekSpinner, problemSpinner;
     private PreferenceManager preferenceManager;
     private View headerView;
@@ -92,6 +94,8 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
     private TextView mClear, mGetSign, mCancel;
     private Dialog dialog;
     private View view;
+    private boolean isLoaded;
+    private String stringPDF;
 
     @SuppressLint("ClickableViewAccessibility")
     @SuppressWarnings("deprecation")
@@ -100,6 +104,8 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_current_details);
         initViews();
+
+        back.setOnClickListener(v -> finish());
 
         accountAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, spinnerArray);
         accountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -157,11 +163,70 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
             deleteDisease();
         });
 
-        pdfUpload.setOnClickListener(v -> isPdfChoose = true);
+        pdfCancel.setOnClickListener(v -> {
+            pdfName.setText("No File Selected");
+            pdfCancel.setVisibility(View.GONE);
+            preferenceManager.setPDF("");
+        });
+
+        pdfUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isPdfChoose = true;
+                new InlineActivityResult(PatientCurrentDetails.this)
+                        .startForResult(new Intent().setAction(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("application/pdf"))
+                        .onSuccess(result -> {
+                            stringPDF = getStringPdf(result.getData().getData());
+                            pdfName.setText("1 File Selected");
+                            preferenceManager.setPDF(result.getData().getData().toString());
+                            pdfCancel.setVisibility(View.VISIBLE);
+                        })
+                        .onFail(result -> Toast.makeText(PatientCurrentDetails.this, "Failed", Toast.LENGTH_SHORT).show());
+            }
+        });
 
         affectedArea.setOnClickListener(v -> show());
 
-        viewArea.setOnClickListener(v -> dialog.show());
+        viewArea.setOnClickListener(v -> {
+            if (isLoaded) {
+                if (dialog != null) {
+                    dialog.show();
+                } else {
+                    show();
+                }
+            } else
+                Toast.makeText(this, "Please Wait Image is being Loaded...", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    public String getStringPdf(Uri filepath) {
+        InputStream inputStream = null;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            inputStream = getContentResolver().openInputStream(filepath);
+
+            byte[] buffer = new byte[1024];
+            byteArrayOutputStream = new ByteArrayOutputStream();
+
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        byte[] pdfByteArray = byteArrayOutputStream.toByteArray();
+
+        return Base64.encodeToString(pdfByteArray, Base64.DEFAULT);
     }
 
     private void savePath() {
@@ -211,6 +276,19 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
             new File(path + "/body" + ".PNG").delete();
             preferenceManager.setAffectedArea("");
         }
+
+        if (!preferenceManager.getPDF().equals("")) {
+            try (FileOutputStream fos = new FileOutputStream(path + "/report.pdf")) {
+                // To be short I use a corrupted PDF string, so make sure to use a valid one if you want to preview the PDF file
+                byte[] decoder = Base64.decode(stringPDF, Base64.CRLF);
+
+                fos.write(decoder);
+                System.out.println("PDF File Saved");
+                preferenceManager.setPDF(path + "/report.pdf");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else new File(path + "/report.pdf").delete();
     }
 
     private void updateDisease(Context context) {
@@ -226,7 +304,7 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pic1 = MultipartBody.Part.createFormData("file1", file.getName(), fileReqBody);
+            pic1 = MultipartBody.Part.createFormData("file1", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pic1 = MultipartBody.Part.createFormData("file1", "", requestBody);
@@ -237,7 +315,7 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pic2 = MultipartBody.Part.createFormData("file2", file.getName(), fileReqBody);
+            pic2 = MultipartBody.Part.createFormData("file2", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pic2 = MultipartBody.Part.createFormData("file2", "", requestBody);
@@ -248,18 +326,21 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pic3 = MultipartBody.Part.createFormData("file3", file.getName(), fileReqBody);
+            pic3 = MultipartBody.Part.createFormData("file3", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pic3 = MultipartBody.Part.createFormData("file3", "", requestBody);
         }
         MultipartBody.Part pdf;
-        if (!preferenceManager.getPic3Path().equals("")) {
-            File file = new File(preferenceManager.getPic3Path());
+        if (!preferenceManager.getPDF().equals("")) {
+            //String path = Environment.getExternalStorageDirectory().getPath()+"/";
+            // String newPath = preferenceManager.getPDF().replace("/document/primary:",path);
+            //File file = new File(newPath);
+            File file = new File(preferenceManager.getPDF());
             // Create a request body with file and image media type
-            RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+            RequestBody fileReqBody = RequestBody.create(MediaType.parse("application/pdf"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            pdf = MultipartBody.Part.createFormData("file4", file.getName(), fileReqBody);
+            pdf = MultipartBody.Part.createFormData("file4", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             pdf = MultipartBody.Part.createFormData("file4", "", requestBody);
@@ -270,7 +351,7 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
             // Create a request body with file and image media type
             RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
             // Create MultipartBody.Part using file request-body,file name and part name
-            affectedArea = MultipartBody.Part.createFormData("file5", file.getName(), fileReqBody);
+            affectedArea = MultipartBody.Part.createFormData("file5", System.currentTimeMillis() + "_" + file.getName(), fileReqBody);
         } else {
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), "");
             affectedArea = MultipartBody.Part.createFormData("file5", "", requestBody);
@@ -443,6 +524,28 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
                 }
             }, preferenceManager.getPic3());
         } else pic3ProgressBar.setVisibility(View.GONE);
+        if (!preferenceManager.getAffectedArea().equals("N/A") && !preferenceManager.getAffectedArea().equals("")) {
+            getBitmapFromURL(new OnCalLBack() {
+                @Override
+                public void onSuccess(Bitmap bitmap) {
+                    runOnUiThread(() -> {
+                        String path = getApplicationContext().getExternalFilesDir("Me/" + getIntent().getStringExtra("type")).getAbsolutePath();
+                        try {
+                            FileOutputStream mFileOutStream = new FileOutputStream(path + "/body" + ".PNG");
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 50, mFileOutStream);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        isLoaded = true;
+                    });
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+
+                }
+            }, preferenceManager.getAffectedArea());
+        }
 
         oldAge.setText(preferenceManager.getOldAge());
         //diseaseType.setText(preferenceManager.getDiseaseType());
@@ -498,17 +601,19 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
         if (!diseaseName.equals(Constant.SEX_DISEASE))
             problemSpinner.setSelection(problemAdapter.getPosition(preferenceManager.getSubProblem()));
 
-        if (!preferenceManager.getAffectedArea().equals("")) {
+        if (!preferenceManager.getAffectedArea().equals("N/A") && !preferenceManager.getAffectedArea().equals("")) {
             affectedArea.setVisibility(View.GONE);
             viewArea.setVisibility(View.VISIBLE);
         }
 
-        if (!preferenceManager.getPDF().equals("")) {
-            pdfName.setText(preferenceManager.getPDF());
+        if (!preferenceManager.getPDF().equals("") && !preferenceManager.getPDF().equals("N/A")) {
+            pdfName.setText("1 file Selected");
+            pdfCancel.setVisibility(View.VISIBLE);
         }
     }
 
     private void initViews() {
+        back = findViewById(R.id.back);
         pic1Layout = findViewById(R.id.pic1Layout);
         pic1ProgressBar = findViewById(R.id.pic1ProgressBar);
         pic2Layout = findViewById(R.id.pic2Layout);
@@ -527,6 +632,7 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
         delete = findViewById(R.id.delete);
         imageView = findViewById(R.id.imageView);
         pdfUpload = findViewById(R.id.pdfUpload);
+        pdfCancel = findViewById(R.id.pdfCancel);
         pdfName = findViewById(R.id.pdfName);
         spinner = findViewById(R.id.spinner);
         numberSpinner = findViewById(R.id.numberSpinner);
@@ -620,26 +726,33 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
                 pic1.setImageDrawable(pic2.getDrawable());
                 pic2.setImageDrawable(pic3.getDrawable());
                 pic3Layout.setVisibility(View.GONE);
+                pic3.setImageDrawable(null);
             } else if (pic2Layout.getVisibility() == View.VISIBLE) {
                 pic1.setImageDrawable(pic2.getDrawable());
                 pic2Layout.setVisibility(View.GONE);
+                pic2.setImageDrawable(null);
             } else if (pic3Layout.getVisibility() == View.VISIBLE) {
                 pic1.setImageDrawable(pic3.getDrawable());
                 pic3Layout.setVisibility(View.GONE);
+                pic3.setImageDrawable(null);
             } else {
                 pic1Layout.setVisibility(View.GONE);
                 imageLayout.setVisibility(View.GONE);
+                pic1.setImageDrawable(null);
             }
         } else if (v.getId() == R.id.pic2Cancel) {
             if (pic3Layout.getVisibility() == View.VISIBLE) {
                 pic2.setImageDrawable(pic3.getDrawable());
                 pic3Layout.setVisibility(View.GONE);
+                pic3.setImageDrawable(null);
             } else {
                 pic2Layout.setVisibility(View.GONE);
+                pic2.setImageDrawable(null);
             }
 
         } else if (v.getId() == R.id.pic3Cancel) {
             pic3Layout.setVisibility(View.GONE);
+            pic3.setImageDrawable(null);
         }
         preferenceManager.setSteps(preferenceManager.getSteps() - 1);
         uploadCardView.setVisibility(View.VISIBLE);
@@ -650,9 +763,6 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null && data.getData() != null) {
             if (isPdfChoose) {
-                pdfName.setText(data.getData().getPath());
-                isPdfChoose = false;
-                preferenceManager.setPDF(data.getData().getPath());
             } else {
                 Uri fileUri = data.getData();
                 if (preferenceManager.getSteps() == 3) {
@@ -712,9 +822,10 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
     public void dialog_action() {
         mContent = dialog.findViewById(R.id.linearLayout);
         mSignature = new Signature(this);
-        if (preferenceManager.getAffectedArea().equals(""))
+        if (preferenceManager.getAffectedArea().equals("") || preferenceManager.getAffectedArea().equals("N/A"))
             mSignature.setBackground(getResources().getDrawable(R.drawable.body));
-        else mSignature.setBackground(Drawable.createFromPath(getApplicationContext().getExternalFilesDir("Me/" + diseaseName).getAbsolutePath() + "/body" + ".PNG"));
+        else
+            mSignature.setBackground(Drawable.createFromPath(getApplicationContext().getExternalFilesDir("Me/" + diseaseName).getAbsolutePath() + "/body" + ".PNG"));
         // Dynamically generating Layout through java code
         mContent.addView(mSignature, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mClear = dialog.findViewById(R.id.clear);
@@ -725,6 +836,11 @@ public class PatientCurrentDetails extends AppCompatActivity implements View.OnC
 
         mClear.setOnClickListener(v -> {
             Log.v("log_tag", "Panel Cleared");
+            if (!preferenceManager.getAffectedArea().equals("") || !preferenceManager.getAffectedArea().equals("N/A")) {
+                dialog.dismiss();
+                preferenceManager.setAffectedArea("");
+                show();
+            }
             mSignature.clear();
             viewArea.setVisibility(View.GONE);
             affectedArea.setVisibility(View.VISIBLE);

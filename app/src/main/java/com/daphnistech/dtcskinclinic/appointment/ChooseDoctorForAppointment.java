@@ -60,6 +60,7 @@ public class ChooseDoctorForAppointment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initViews(view);
         setDoctors();
+        back.setOnClickListener(v -> getFragmentManager().popBackStackImmediate());
         preferenceManager = new PreferenceManager(getActivity(), Constant.USER_DETAILS);
         doctorsAdapter = new DoctorsAdapter(getActivity(), doctorsList, "appointment_choose");
         doctorsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -96,7 +97,7 @@ public class ChooseDoctorForAppointment extends Fragment {
                                 JSONArray jsonArray = jsonObject.getJSONArray("doctors");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject doctors = new JSONObject(jsonArray.getString(i));
-                                    doctorsList.add(new Doctors(doctors.getInt("doctor_id"), doctors.getString("name"), doctors.getString("designation"), "4.5", doctors.getString("consultation_fees")));
+                                    doctorsList.add(new Doctors(doctors.getInt("doctor_id"), doctors.getString("name"), doctors.getString("photo"), doctors.getString("designation"), "4.5", doctors.getString("consultation_fees")));
                                 }
                                 doctorsAdapter.notifyDataSetChanged();
                                 CustomProgressBar.hideProgressBar();

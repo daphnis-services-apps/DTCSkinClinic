@@ -11,18 +11,20 @@ public class Doctors {
     String isOnline;
     int unreadCount;
 
-    public Doctors(int id, String name, String designation, String rating, String consultationFees) {
+    public Doctors(int id, String name, String photo, String designation, String rating, String consultationFees) {
         this.doctorId = id;
         this.name = name;
+        this.photo = photo;
         this.designation = designation;
         this.rating = rating;
         this.consultationFees = consultationFees;
     }
 
-    public Doctors(int appointment_id, int id, String name, String designation, String isOnline, int unreadCount) {
+    public Doctors(int appointment_id, int id, String name, String photo, String designation, String isOnline, int unreadCount) {
         this.appointment_id = appointment_id;
         this.doctorId = id;
         this.name = name;
+        this.photo = photo;
         this.designation = designation;
         this.isOnline = isOnline;
         this.unreadCount = unreadCount;

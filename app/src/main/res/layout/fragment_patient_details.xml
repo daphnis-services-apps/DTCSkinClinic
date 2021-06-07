@@ -81,7 +81,7 @@
             <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
                 android:id="@+id/nameLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/grey"
@@ -94,7 +94,7 @@
                 <EditText
                     android:id="@+id/name"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:hint="Name/नाम"
                     android:inputType="textCapWords"
                     android:textColor="@color/black"
@@ -105,7 +105,7 @@
             <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
                 android:id="@+id/ageLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/grey"
@@ -118,7 +118,7 @@
                 <EditText
                     android:id="@+id/age"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:hint="Age/उम्र"
                     android:inputType="number"
                     android:maxLength="2"
@@ -236,7 +236,7 @@
             <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
                 android:id="@+id/pinLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/grey"
@@ -249,7 +249,7 @@
                 <EditText
                     android:id="@+id/pin"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:hint="Pin Code/पिन कोड"
                     android:inputType="number"
                     android:maxLength="6"
