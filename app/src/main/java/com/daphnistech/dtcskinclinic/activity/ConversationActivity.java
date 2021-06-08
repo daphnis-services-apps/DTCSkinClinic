@@ -96,6 +96,7 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
     private String appointment_status;
     private LinearLayoutManager layoutManager;
     private CircleImageView profile;
+    private boolean imageSelect = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,7 +123,12 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         imageButton.setOnClickListener(this);
         sendButton.setOnClickListener(this);
 
-        back.setOnClickListener(v -> finish());
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         recyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             if (bottom < oldBottom) {
@@ -226,7 +232,7 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
 
                     } else {
                         Log.i("onEmptyResponse", "Returned empty response");
-
+                        Toast.makeText(context, "Returned empty response", Toast.LENGTH_SHORT).show();
                     }
                 } else if (response.errorBody() != null) {
                     Toast.makeText(context, response.errorBody().toString(), Toast.LENGTH_SHORT).show();
@@ -386,9 +392,10 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.imageButton) {
+            imageSelect = true;
             ImagePicker.Companion
                     .with((Activity) context)
-                    .crop()
+                    .cropSquare()
                     .compress(1024)
                     .start();
         } else if (v.getId() == R.id.sendButton) {
@@ -444,10 +451,12 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
                             }
                         } else
                             Toast.makeText(context, "Error Occurred. Please Try Again Later", Toast.LENGTH_SHORT).show();
+                        CustomProgressBar.hideProgressBar();
                     } else {
                         Log.i("onEmptyResponse", "Returned empty response");
+                        Toast.makeText(context, "Returned empty response", Toast.LENGTH_SHORT).show();
+                        CustomProgressBar.hideProgressBar();
                     }
-                    CustomProgressBar.hideProgressBar();
                 } else if (response.errorBody() != null) {
                     Toast.makeText(context, response.errorBody().toString(), Toast.LENGTH_SHORT).show();
                     CustomProgressBar.hideProgressBar();
@@ -551,8 +560,8 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        assert data != null;
-        sendMessage("image", "N/A", data.getData().toString(), data.getData().getPath());
+        if (data != null && data.getData() != null)
+            sendMessage("image", "N/A", data.getData().toString(), data.getData().getPath());
     }
 
 
@@ -576,12 +585,24 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
 
         NotificationUtils.clearNotifications();
 
-        getConversations();
-        conversationAdapter = new ConversationAdapter(context, conversationList);
-        layoutManager = new LinearLayoutManager(context);
-        layoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(conversationAdapter);
+        if (!imageSelect) {
+            getConversations();
+            conversationAdapter = new ConversationAdapter(context, conversationList);
+            layoutManager = new LinearLayoutManager(context);
+            layoutManager.setStackFromEnd(true);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(conversationAdapter);
+        }
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
+            startActivity(new Intent(context, PatientDashboard.class));
+        } else {
+            startActivity(new Intent(context, DoctorDashboard.class));
+        }
+        finish();
     }
 }

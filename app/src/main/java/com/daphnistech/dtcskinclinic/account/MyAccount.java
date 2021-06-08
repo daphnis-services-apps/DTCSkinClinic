@@ -161,9 +161,10 @@ public class MyAccount extends Fragment {
                             JSONObject jsonObject = new JSONObject(jsonResponse);
                             if (jsonObject.getBoolean("error")) {
                                 Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-
+                                CustomProgressBar.hideProgressBar();
                             } else {
                                 PreferenceManager.clearAll(getActivity());
+                                CustomProgressBar.hideProgressBar();
                                 getActivity().startActivity(new Intent(getActivity(), LoginChooser.class));
                                 getActivity().finish();
                             }

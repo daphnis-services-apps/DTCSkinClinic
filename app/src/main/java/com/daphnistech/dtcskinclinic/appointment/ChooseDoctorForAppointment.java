@@ -103,24 +103,30 @@ public class ChooseDoctorForAppointment extends Fragment {
                                 CustomProgressBar.hideProgressBar();
                             } else {
                                 Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                CustomProgressBar.hideProgressBar();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            CustomProgressBar.hideProgressBar();
                         }
                         //Parsing the JSON
 
                     } else {
                         Log.i("onEmptyResponse", "Returned empty response");
-
+                        Toast.makeText(getActivity(), "Returned empty response", Toast.LENGTH_SHORT).show();
+                        CustomProgressBar.hideProgressBar();
                     }
                 } else if (response.errorBody() != null) {
-
+                    Toast.makeText(getActivity(), response.message(), Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
-
+                Toast.makeText(getActivity(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                CustomProgressBar.hideProgressBar();
             }
         });
     }

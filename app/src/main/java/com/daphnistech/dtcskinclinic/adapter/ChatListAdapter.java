@@ -1,6 +1,7 @@
 package com.daphnistech.dtcskinclinic.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -86,17 +87,22 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             holder.count.setText(String.valueOf(unreadCount));
         }
 
-        holder.parentLayout.setOnClickListener(v ->
-                context.startActivity(
-                        new Intent(context, ConversationActivity.class)
-                                .putExtra("appointment_id", appointment_id)
-                                .putExtra("name", holder.name.getText().toString())
-                                .putExtra("receiver_id", id)
-                                .putExtra("is_online", isOnline)
-                                .putExtra("profile", photo)
-                                .putExtra("appointment_status","open")
-                                .putExtra("unread_count", unreadCount)
-                )
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+                                                   @Override
+                                                   public void onClick(View v) {
+                                                       context.startActivity(
+                                                               new Intent(context, ConversationActivity.class)
+                                                                       .putExtra("appointment_id", appointment_id)
+                                                                       .putExtra("name", holder.name.getText().toString())
+                                                                       .putExtra("receiver_id", id)
+                                                                       .putExtra("is_online", isOnline)
+                                                                       .putExtra("profile", photo)
+                                                                       .putExtra("appointment_status", "open")
+                                                                       .putExtra("unread_count", unreadCount)
+                                                       );
+                                                       ((Activity) context).finish();
+                                                   }
+                                               }
         );
 
     }

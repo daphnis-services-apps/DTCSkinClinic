@@ -316,6 +316,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         preferenceManager.setLoggedIn(true);
         if (new PreferenceManager(context, Constant.USER_DETAILS).getLoginType().equals(Constant.PATIENT)) {
             preferenceManager.setUserID(user.getInt(Constant.PATIENT_ID));
+            preferenceManager.setFirstTimeLogin(false);
             startActivity(new Intent(context, PatientDashboard.class));
         } else {
             preferenceManager.setUserID(user.getInt(Constant.DOCTOR_ID));

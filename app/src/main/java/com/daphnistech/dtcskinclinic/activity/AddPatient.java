@@ -54,49 +54,45 @@ public class AddPatient extends AppCompatActivity {
                 try {
                     FileOutputStream mFileOutStream = new FileOutputStream(path + "/pic" + ".PNG");
                     ((BitmapDrawable) (patientDetails.profilePic.getDrawable())).getBitmap().compress(Bitmap.CompressFormat.PNG, 50, mFileOutStream);
-                    new PreferenceManager(context , Constant.USER_DETAILS).setProfileImage(path + "/pic" + ".PNG");
+                    new PreferenceManager(context, Constant.USER_DETAILS).setProfileImage(path + "/pic" + ".PNG");
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
             } else {
                 CurrentDiseasesDetails currentDiseasesDetails = (CurrentDiseasesDetails) fragment;
                 preferenceManager = new PreferenceManager(context, currentDiseasesDetails.diseaseName);
-                if (currentDiseasesDetails.isPdfChoose) {
-                    currentDiseasesDetails.isPdfChoose = false;
-                } else {
-                    Uri fileUri = data.getData();
-                    if (preferenceManager.getSteps() == 3) {
-                        preferenceManager.setSteps(0);
-                    }
-                    if (preferenceManager.getSteps() == 0) {
-                        currentDiseasesDetails.pic1.setImageURI(fileUri);
-                        currentDiseasesDetails.pic1Layout.setVisibility(View.VISIBLE);
-                        currentDiseasesDetails.imageLayout.setVisibility(View.VISIBLE);
-                        preferenceManager.setPic1(fileUri.toString());
-                        preferenceManager.setPic1Path(data.getData().getPath());
-                        preferenceManager.setSteps(1);
-                    } else if (preferenceManager.getSteps() == 1) {
-                        currentDiseasesDetails.pic1.setImageURI(Uri.parse(preferenceManager.getPic1()));
-                        currentDiseasesDetails.imageLayout.setVisibility(View.VISIBLE);
-                        currentDiseasesDetails.pic1Layout.setVisibility(View.VISIBLE);
-                        currentDiseasesDetails.pic2.setImageURI(fileUri);
-                        currentDiseasesDetails.pic2Layout.setVisibility(View.VISIBLE);
-                        preferenceManager.setPic2(fileUri.toString());
-                        preferenceManager.setPic2Path(data.getData().getPath());
-                        preferenceManager.setSteps(2);
-                    } else if (preferenceManager.getSteps() == 2) {
-                        currentDiseasesDetails.pic1.setImageURI(Uri.parse(preferenceManager.getPic1()));
-                        currentDiseasesDetails.imageLayout.setVisibility(View.VISIBLE);
-                        currentDiseasesDetails.pic1Layout.setVisibility(View.VISIBLE);
-                        currentDiseasesDetails.pic2.setImageURI(Uri.parse(preferenceManager.getPic2()));
-                        currentDiseasesDetails.pic2Layout.setVisibility(View.VISIBLE);
-                        currentDiseasesDetails.pic3.setImageURI(fileUri);
-                        currentDiseasesDetails.pic3Layout.setVisibility(View.VISIBLE);
-                        currentDiseasesDetails.uploadCardView.setVisibility(View.GONE);
-                        preferenceManager.setPic3(fileUri.toString());
-                        preferenceManager.setPic3Path(data.getData().getPath());
-                        preferenceManager.setSteps(3);
-                    }
+                Uri fileUri = data.getData();
+                if (preferenceManager.getSteps() == 3) {
+                    preferenceManager.setSteps(0);
+                }
+                if (preferenceManager.getSteps() == 0) {
+                    currentDiseasesDetails.pic1.setImageURI(fileUri);
+                    currentDiseasesDetails.pic1Layout.setVisibility(View.VISIBLE);
+                    currentDiseasesDetails.imageLayout.setVisibility(View.VISIBLE);
+                    preferenceManager.setPic1(fileUri.toString());
+                    preferenceManager.setPic1Path(data.getData().getPath());
+                    preferenceManager.setSteps(1);
+                } else if (preferenceManager.getSteps() == 1) {
+                    currentDiseasesDetails.pic1.setImageURI(Uri.parse(preferenceManager.getPic1()));
+                    currentDiseasesDetails.imageLayout.setVisibility(View.VISIBLE);
+                    currentDiseasesDetails.pic1Layout.setVisibility(View.VISIBLE);
+                    currentDiseasesDetails.pic2.setImageURI(fileUri);
+                    currentDiseasesDetails.pic2Layout.setVisibility(View.VISIBLE);
+                    preferenceManager.setPic2(fileUri.toString());
+                    preferenceManager.setPic2Path(data.getData().getPath());
+                    preferenceManager.setSteps(2);
+                } else if (preferenceManager.getSteps() == 2) {
+                    currentDiseasesDetails.pic1.setImageURI(Uri.parse(preferenceManager.getPic1()));
+                    currentDiseasesDetails.imageLayout.setVisibility(View.VISIBLE);
+                    currentDiseasesDetails.pic1Layout.setVisibility(View.VISIBLE);
+                    currentDiseasesDetails.pic2.setImageURI(Uri.parse(preferenceManager.getPic2()));
+                    currentDiseasesDetails.pic2Layout.setVisibility(View.VISIBLE);
+                    currentDiseasesDetails.pic3.setImageURI(fileUri);
+                    currentDiseasesDetails.pic3Layout.setVisibility(View.VISIBLE);
+                    currentDiseasesDetails.uploadCardView.setVisibility(View.GONE);
+                    preferenceManager.setPic3(fileUri.toString());
+                    preferenceManager.setPic3Path(data.getData().getPath());
+                    preferenceManager.setSteps(3);
                 }
             }
         }

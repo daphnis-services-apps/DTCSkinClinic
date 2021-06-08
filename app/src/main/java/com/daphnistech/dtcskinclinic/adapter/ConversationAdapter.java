@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,13 +37,12 @@ import java.util.List;
 
 import static com.daphnistech.dtcskinclinic.helper.DateHelper.getCurrentTime;
 import static com.daphnistech.dtcskinclinic.helper.DateHelper.getDate;
-import static com.daphnistech.dtcskinclinic.helper.DateHelper.getDateDifference;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
     Context context;
     List<Conversation> conversationList;
     private int position;
-    private String currentDate = getCurrentTime("date");
+    private final String currentDate = getCurrentTime("date");
     private String previousDate;
     private int dateCounter;
 
@@ -96,13 +95,17 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                         .into(holder.imageView);
 
                 holder.imageView.setOnClickListener(v -> {
-                    Intent intent = new Intent(context, FullScreenImageActivity.class);
                     BitmapDrawable drawable = (BitmapDrawable) holder.imageView.getDrawable();
-                    Bitmap bitmap = drawable.getBitmap();
-                    ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 50, bs);
-                    intent.putExtra("byteArray", bs.toByteArray());
-                    context.startActivity(intent);
+                    if (drawable != null) {
+                        Intent intent = new Intent(context, FullScreenImageActivity.class);
+                        Bitmap bitmap = drawable.getBitmap();
+                        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, bs);
+                        intent.putExtra("byteArray", bs.toByteArray());
+                        context.startActivity(intent);
+                    } else {
+                        Toast.makeText(context, "Please wait, Image is downloading", Toast.LENGTH_SHORT).show();
+                    }
                 });
             }
             holder.timeStamp.setText(getDate(conversation.getTimeStamp(), "time"));

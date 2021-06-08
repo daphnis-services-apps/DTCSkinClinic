@@ -52,12 +52,14 @@ public class PatientDashboard extends AppCompatActivity {
         preferenceManager = new PreferenceManager(context, Constant.USER_DETAILS);
         FirebaseMessaging.getInstance().subscribeToTopic(Constant.PATIENT);
 
-        chipNavigationBar.setItemSelected(R.id.home, true);
+
         //chipNavigationBar.showBadge(R.id.chat, 5);
-        if (preferenceManager.isFirstTimeLogin())
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new Home()).commit();
-        else {
+        if (preferenceManager.isFirstTimeLogin()) {
             preferenceManager.setFirstTimeLogin(false);
+            chipNavigationBar.setItemSelected(R.id.home, true);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new Home()).commit();
+        } else {
+            chipNavigationBar.setItemSelected(R.id.chat, true);
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatList()).commit();
         }
 

@@ -131,6 +131,7 @@ public class MyAppointments extends Fragment {
                                 }
                             } else {
                                 Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                CustomProgressBar.hideProgressBar();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

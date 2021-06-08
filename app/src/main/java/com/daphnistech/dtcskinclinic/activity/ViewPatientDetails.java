@@ -310,6 +310,9 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
                     sexDiseaseContinue.setVisibility(View.VISIBLE);
                 }
                 assert preferenceManager != null;
+                preferenceManager.setPic1Path("");
+                preferenceManager.setPic2Path("");
+                preferenceManager.setPic3Path("");
                 preferenceManager.setOldAge(currentDisease.getString("old_age"));
                 preferenceManager.setDiseaseType(currentDisease.getString("disease_type"));
                 preferenceManager.setSubProblem(currentDisease.getString("sub_problem"));

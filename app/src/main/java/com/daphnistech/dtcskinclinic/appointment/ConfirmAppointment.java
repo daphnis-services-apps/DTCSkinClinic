@@ -210,17 +210,34 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
                                 int id = jsonObject.getInt("appointment_id");
                                 checkLayout.setVisibility(View.GONE);
                                 confirmLayout.setVisibility(View.VISIBLE);
-                                new Handler().postDelayed(() -> getActivity().startActivity(
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getActivity().startActivity(
+                                                new Intent(getActivity(), ConversationActivity.class)
+                                                        .putExtra("appointment_id", id)
+                                                        .putExtra("name", preferenceManager.getDoctorName())
+                                                        .putExtra("receiver_id", preferenceManager.getDoctorId())
+                                                        .putExtra("appointment_status", "open")
+                                                        .putExtra("is_online", false)
+                                                        .putExtra("unread_count", 0)
+                                        );
+                                        getActivity().finish();
+                                    }
+                                }, 3000);
+                            } else {
+                                Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                int id = jsonObject.getInt("appointment_id");
+                                getActivity().startActivity(
                                         new Intent(getActivity(), ConversationActivity.class)
                                                 .putExtra("appointment_id", id)
                                                 .putExtra("name", preferenceManager.getDoctorName())
                                                 .putExtra("receiver_id", preferenceManager.getDoctorId())
-                                                .putExtra("appointment_status","open")
+                                                .putExtra("appointment_status", "open")
                                                 .putExtra("is_online", false)
                                                 .putExtra("unread_count", 0)
-                                ), 3000);
-                            } else {
-                                Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                );
+                                getActivity().finish();
                             }
                             CustomProgressBar.hideProgressBar();
                         } catch (JSONException e) {

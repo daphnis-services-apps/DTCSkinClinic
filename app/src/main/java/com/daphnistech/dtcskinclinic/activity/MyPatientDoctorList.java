@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,9 +41,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MyPatientDoctorList extends Fragment {
-    RecyclerView myPatientDoctorRecyclerView;
-    MyPatientDoctorAdapter myPatientDoctorAdapter;
-    List<MyPatientDoctor> myPatientDoctorList;
+    private RecyclerView myPatientDoctorRecyclerView;
+    private MyPatientDoctorAdapter myPatientDoctorAdapter;
+    private List<MyPatientDoctor> myPatientDoctorList;
+    private PreferenceManager preferenceManager;
+    private ImageView back;
+    private TextView heading;
 
     public MyPatientDoctorList() {
         // Required empty public constructor
@@ -64,6 +69,14 @@ public class MyPatientDoctorList extends Fragment {
             window.setStatusBarColor(getResources().getColor(R.color.loginChooser));
         }
         myPatientDoctorRecyclerView = view.findViewById(R.id.myPatientDoctorRecyclerView);
+        heading = view.findViewById(R.id.text);
+        back = view.findViewById(R.id.back);
+        preferenceManager = new PreferenceManager(getActivity(), Constant.USER_DETAILS);
+        if (preferenceManager.getLoginType().equals(Constant.PATIENT))
+            heading.setText("My Doctors");
+        else heading.setText("My Patients");
+
+        back.setOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStackImmediate());
     }
 
     private void setList() {
@@ -76,7 +89,6 @@ public class MyPatientDoctorList extends Fragment {
 
         UserInterface api = retrofit.create(UserInterface.class);
 
-        PreferenceManager preferenceManager = new PreferenceManager(getActivity(), Constant.USER_DETAILS);
         int user_id = preferenceManager.getUserID();
         Call<String> call = null;
         if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
@@ -103,20 +115,23 @@ public class MyPatientDoctorList extends Fragment {
                             } else {
                                 Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_LONG).show();
                             }
+                            CustomProgressBar.hideProgressBar();
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                            CustomProgressBar.hideProgressBar();
                         }
 
                     } else {
                         Log.i("onEmptyResponse", "Returned empty response");
                         Toast.makeText(getActivity(), "Returned empty response", Toast.LENGTH_LONG).show();
+                        CustomProgressBar.hideProgressBar();
                     }
 
                 } else if (response.errorBody() != null) {
                     Toast.makeText(getActivity(), response.errorBody().toString(), Toast.LENGTH_LONG).show();
+                    CustomProgressBar.hideProgressBar();
                 }
-                CustomProgressBar.hideProgressBar();
             }
 
             @Override

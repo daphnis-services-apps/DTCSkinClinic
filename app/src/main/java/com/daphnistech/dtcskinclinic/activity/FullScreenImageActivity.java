@@ -2,7 +2,6 @@ package com.daphnistech.dtcskinclinic.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,13 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.firebase.NotificationUtils;
 import com.daphnistech.dtcskinclinic.helper.Constant;
@@ -27,8 +21,6 @@ import com.daphnistech.dtcskinclinic.helper.UserInterface;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.Field;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,19 +54,12 @@ public class FullScreenImageActivity extends AppCompatActivity {
     }
 
     private void setValues() {
-        if(getIntent().hasExtra("byteArray")) {
+        if (getIntent().hasExtra("byteArray")) {
             Bitmap b = BitmapFactory.decodeByteArray(
-                    getIntent().getByteArrayExtra("byteArray"),0,getIntent()
+                    getIntent().getByteArrayExtra("byteArray"), 0, getIntent()
                             .getByteArrayExtra("byteArray").length);
             mImageView.setImageBitmap(b);
         }
-        //mImageView.setImageBitmap((Bitmap) getIntent().getParcelableExtra("image"));
-        /*String s = getIntent().getStringExtra("urlPhotoClick");
-        Glide.with(this)
-                .load(s)
-                .centerCrop()
-                .into(mImageView);*/
-
     }
 
     private void putStatus(boolean status) {

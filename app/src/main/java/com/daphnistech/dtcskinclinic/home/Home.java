@@ -135,6 +135,7 @@ public class Home extends Fragment {
                                 scrollForward();
                             } else {
                                 Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                CustomProgressBar.hideProgressBar();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

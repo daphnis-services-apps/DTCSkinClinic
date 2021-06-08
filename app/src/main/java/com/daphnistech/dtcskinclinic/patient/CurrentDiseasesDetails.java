@@ -59,7 +59,7 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
     public ImageView pic1Cancel, pic2Cancel, pic3Cancel;
     public String diseaseName;
     public TextView pdfName;
-    public boolean isPdfChoose;
+    public boolean isPdfChoose = false;
     public LinearLayout imageLayout;
     ArrayAdapter<String> accountAdapter, numberAdapter, weekAdapter, problemAdapter;
     private TextView heading, heading1;
@@ -133,12 +133,15 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
             return false;
         });
 
-        uploadCardView.setOnClickListener(v -> ImagePicker.Companion.with(getActivity())
-                .crop()
-                .galleryOnly()
-                .compress(256)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(1080, 1080)//Final image resolution will be less than 1080 x 1080(Optional)
-                .start());
+        uploadCardView.setOnClickListener(v -> {
+            isPdfChoose = false;
+            ImagePicker.Companion.with(CurrentDiseasesDetails.this.getActivity())
+                    .crop()
+                    .galleryOnly()
+                    .compress(256)            //Final image size will be less than 1 MB(Optional)
+                    .maxResultSize(1080, 1080)//Final image resolution will be less than 1080 x 1080(Optional)
+                    .start();
+        });
 
         next.setOnClickListener(v -> {
             CustomProgressBar.showProgressBar(getActivity(), false);
@@ -151,9 +154,11 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
                     preferenceManager.setSubProblem(problemArray[problemSpinner.getSelectedItemPosition()]);
                 assert getActivity().getSupportFragmentManager() != null;
                 if (diseaseCount < currentHistory.size() - 1) {
+                    CustomProgressBar.hideProgressBar();
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new CurrentDiseasesDetails(currentHistory, diseaseCount + 1)).addToBackStack("disease" + diseaseCount).commit();
                 } else {
                     //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ConfirmDetails()).addToBackStack("disease" + diseaseCount).commit();
+                    CustomProgressBar.hideProgressBar();
                     if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).isLoginSkipped()) {
                         startActivity(new Intent(getActivity(), PatientDashboard.class));
                         getActivity().finish();
@@ -161,7 +166,6 @@ public class CurrentDiseasesDetails extends Fragment implements View.OnClickList
                         new ConfirmDetails().loginPatient(getActivity());
                     }
                 }
-                CustomProgressBar.hideProgressBar();
             }, 500);
         });
 

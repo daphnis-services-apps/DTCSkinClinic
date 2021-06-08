@@ -15,6 +15,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -457,7 +458,7 @@ public class NotificationUtils {
                     .setNumber(number);
         } else {
             notificationCompatBuilder
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.doctor_plus)
                     .setContentText(Message)
                     .setAutoCancel(true)
                     .setNumber(number)
@@ -466,6 +467,8 @@ public class NotificationUtils {
                     .setColor(ContextCompat.getColor(mContext, R.color.loginChooser))
                     .setSubText(Integer.toString(number))
                     .setShortcutId("id1")
+                    .setSound(Uri.parse("android.resource://"
+                            + mContext.getPackageName() + "/" + R.raw.notification))
                     .addAction(replyAction)
                     .setCategory(Notification.CATEGORY_MESSAGE)
                     .setStyle(messagingStyle)
@@ -606,8 +609,10 @@ public class NotificationUtils {
             InputStream input = connection.getInputStream();
             return BitmapFactory.decodeStream(input);
         } catch (IOException e) {
-            if (mContext != null)
+            if (mContext != null) {
+                Looper.prepare();
                 Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
             return null;
         }
     }
