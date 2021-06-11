@@ -19,12 +19,15 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
+import com.daphnistech.dtcskinclinic.activity.DoctorDashboard;
 import com.daphnistech.dtcskinclinic.activity.LoginActivity;
 import com.daphnistech.dtcskinclinic.activity.LoginChooser;
 import com.daphnistech.dtcskinclinic.activity.MyPatientDoctorList;
+import com.daphnistech.dtcskinclinic.activity.PatientDashboard;
 import com.daphnistech.dtcskinclinic.activity.ViewDoctorDetails;
 import com.daphnistech.dtcskinclinic.activity.ViewPatientDetails;
 import com.daphnistech.dtcskinclinic.appointment.MyAppointments;
+import com.daphnistech.dtcskinclinic.chat.ChatList;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
@@ -44,7 +47,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MyAccount extends Fragment {
     TextView name, mobile, transactions, doctors, profile, approvalText;
-    LinearLayout myAppointment, logout, myTransactions, myAccount, healthStatus, myDoctors;
+    LinearLayout myAppointment, logout, myTransactions, myAccount, healthStatus, myDoctors, myChat;
     CircleImageView photo;
     View logoutView, paymentView;
 
@@ -84,6 +87,7 @@ public class MyAccount extends Fragment {
         healthStatus = view.findViewById(R.id.diseaseLayout);
         myAccount = view.findViewById(R.id.profileLayout);
         myDoctors = view.findViewById(R.id.myDoctorsLayout);
+        myChat = view.findViewById(R.id.myChatLayout);
 
         if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getUserID() == 0) {
             profile.setText("Login");
@@ -119,6 +123,18 @@ public class MyAccount extends Fragment {
             assert getActivity().getSupportFragmentManager() != null;
             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new MyPatientDoctorList()).addToBackStack("myAccount").commit();
 
+        });
+
+        myChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                assert getActivity().getSupportFragmentManager() != null;
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatList()).addToBackStack("myAccount").commit();
+                if (new PreferenceManager(getActivity(), Constant.USER_DETAILS).getLoginType().equals(Constant.PATIENT))
+                    ((PatientDashboard) getActivity()).setBottomSelected();
+                else
+                    ((DoctorDashboard) getActivity()).setBottomSelected();
+            }
         });
 
         myAccount.setOnClickListener(v -> {

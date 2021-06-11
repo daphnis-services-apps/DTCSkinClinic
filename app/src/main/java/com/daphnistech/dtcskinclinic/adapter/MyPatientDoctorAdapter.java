@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
+import com.daphnistech.dtcskinclinic.helper.Constant;
+import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.model.MyPatientDoctor;
 
 import org.jetbrains.annotations.NotNull;
@@ -43,9 +45,15 @@ public class MyPatientDoctorAdapter extends RecyclerView.Adapter<MyPatientDoctor
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         MyPatientDoctor myPatientDoctor = myPatientDoctorList.get(position);
-        holder.name.setText(myPatientDoctor.getName());
+        PreferenceManager preferenceManager = new PreferenceManager(context, Constant.USER_DETAILS);
+        if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
+            holder.name.setText(String.format("Dr. %s", myPatientDoctor.getName()));
+            holder.title.setText(myPatientDoctor.getTitle());
+        } else {
+            holder.name.setText(myPatientDoctor.getName());
+            holder.title.setText(String.format("%s Years", myPatientDoctor.getTitle()));
+        }
         Glide.with(context).load(myPatientDoctor.getPhoto()).placeholder(context.getDrawable(R.drawable.doctor_plus)).into(holder.photo);
-        holder.title.setText(myPatientDoctor.getTitle());
 
         holder.parentLayout.setOnClickListener(v -> context.startActivity(
                 new Intent(context, ConversationActivity.class)

@@ -148,4 +148,8 @@ public class DoctorDashboard extends AppCompatActivity {
         dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> finish());
         dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
     }
+
+    public void setBottomSelected() {
+        chipNavigationBar.setItemSelected(R.id.chat, true);
+    }
 }
