@@ -49,9 +49,11 @@ public class FirebasePushNotification extends FirebaseMessagingService {
         try {
             JSONObject datObj = new JSONObject(data);
 
-            String name = datObj.getString("name");
+            String title = datObj.getString("title");
+            String message = datObj.getString("message");
+            String type = datObj.getString("type");
 
-            showNotificationAppointment(getApplicationContext(), "New Appointment Scheduled", name + " has been Scheduled a new Appointment with you", null);
+            showNotificationAppointment(getApplicationContext(), title, message, type);
 
         } catch (JSONException e) {
             Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -151,8 +153,8 @@ public class FirebasePushNotification extends FirebaseMessagingService {
         notificationUtils.generateMessagingStyleNotification(timestamp, message, imageUrl, appointment_id, name, id, appointment_status);
     }
 
-    private void showNotificationAppointment(Context context, String title, String message, String imageUrl) {
+    private void showNotificationAppointment(Context context, String title, String message, String type) {
         notificationUtils = new NotificationUtils(context);
-        notificationUtils.showNotificationAppointment(title, message, imageUrl);
+        notificationUtils.showNotificationAppointment(title, message, type);
     }
 }

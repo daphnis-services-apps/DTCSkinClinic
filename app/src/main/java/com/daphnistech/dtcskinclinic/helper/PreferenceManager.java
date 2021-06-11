@@ -404,4 +404,12 @@ public class PreferenceManager {
     public void setFirstTimeLogin(boolean b) {
         editor.putBoolean(Constant.IS_FIRST_TIME, b).apply();
     }
+
+    public boolean isApproved() {
+        return sharedPreferences.getBoolean(Constant.APPROVED, false);
+    }
+
+    public void setApproved(boolean b) {
+        editor.putBoolean(Constant.APPROVED, b).apply();
+    }
 }

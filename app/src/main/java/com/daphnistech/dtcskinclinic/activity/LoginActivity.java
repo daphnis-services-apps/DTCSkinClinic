@@ -320,6 +320,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             startActivity(new Intent(context, PatientDashboard.class));
         } else {
             preferenceManager.setUserID(user.getInt(Constant.DOCTOR_ID));
+            preferenceManager.setApproved(user.getBoolean(Constant.IS_APPROVED));
             startActivity(new Intent(context, DoctorDashboard.class));
         }
         finish();

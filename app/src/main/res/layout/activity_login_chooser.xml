@@ -10,14 +10,14 @@
     <ImageView
         android:id="@+id/man"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_350sdp"
+        android:layout_height="@dimen/login_image_height"
         android:scaleType="fitXY"
         android:src="@drawable/man"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_350sdp"
+        android:layout_height="@dimen/login_image_height"
         android:scaleType="fitXY"
         android:src="@drawable/transparent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -36,7 +36,7 @@
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_150sdp"
+            android:layout_height="160dp"
             android:layout_marginVertical="@dimen/_10sdp"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/logo_with_title"

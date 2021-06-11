@@ -52,8 +52,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         holder.fees.setText(String.format("\u20B9 %s", appointments.getTransactionAmount()));
         holder.mode.setText(String.valueOf(appointments.getAppointmentId()) );
         holder.status.setText(appointments.getAppointmentStatus());
-        if(appointments.getAppointmentStatus().equalsIgnoreCase("closed")){
+        if (appointments.getAppointmentStatus().equalsIgnoreCase("closed")) {
             holder.status.setTextColor(Color.RED);
+        } else {
+            holder.status.setTextColor(Color.GREEN);
         }
     }
 

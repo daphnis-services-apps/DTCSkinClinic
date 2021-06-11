@@ -37,7 +37,9 @@ import com.daphnistech.dtcskinclinic.R;
 import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
 import com.daphnistech.dtcskinclinic.activity.DoctorDashboard;
 import com.daphnistech.dtcskinclinic.helper.Config;
+import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.MyApplication;
+import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,7 +112,7 @@ public class NotificationUtils {
         return 0;
     }
 
-    public void showNotificationAppointment(String title, String message, String imageUrl) {
+    public void showNotificationAppointment(String title, String message, String type) {
 
         // Main steps for building a BIG_TEXT_STYLE notification:
         //      0. Get your data
@@ -138,7 +140,7 @@ public class NotificationUtils {
                 // Summary line after the detail section in the big form of the template.
                 // Note: To improve readability, don't overload the user with info. If Summary Text
                 // doesn't add critical information, you should skip it.
-                .setSummaryText("Appointments");
+                .setSummaryText(type);
 
 
         // 3. Set up main Intent for notification.
@@ -261,6 +263,10 @@ public class NotificationUtils {
                 .build();
 
         mNotificationManagerCompat.notify(APPOINTMENT_NOTIFICATION_ID, notification);
+
+        if (type.equals("Approval"))
+            new PreferenceManager(mContext, Constant.USER_DETAILS).setApproved(true);
+
     }
 
     public void generateMessagingStyleNotification(final String timestamp, final String Message, String imageUrl, int appointment_id, String Name, String id, String appointment_status) {

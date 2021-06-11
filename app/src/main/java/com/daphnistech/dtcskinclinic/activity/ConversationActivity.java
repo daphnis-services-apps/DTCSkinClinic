@@ -78,6 +78,7 @@ import static com.daphnistech.dtcskinclinic.helper.DateHelper.getDateDifference;
 public class ConversationActivity extends AppCompatActivity implements TextWatcher, View.OnClickListener {
     public static boolean send = true;
     ImageView sendButton, imageButton, online, options, back;
+    LinearLayout person;
     EditText message;
     Context context;
     List<Conversation> conversationList;
@@ -115,8 +116,10 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         notificationManager.cancel(MESSAGE_NOTIFICATION_ID);
         MyApplication.getInstance().getPrefManager().clearNotifications();
         preferenceManager = new PreferenceManager(context, Constant.USER_DETAILS);
-        if (preferenceManager.getLoginType().equals(Constant.PATIENT))
+        if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
             options.setVisibility(View.GONE);
+            person.setVisibility(View.GONE);
+        }
 
 
         message.addTextChangedListener(this);
@@ -139,6 +142,12 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         });
 
         options.setOnClickListener(v -> ChatOptions.showProgressBar(context, true, appointment_status.equalsIgnoreCase("open")));
+
+        person.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ViewPatientDetails.class);
+            intent.putExtra("id", patient_id);
+            startActivity(intent);
+        });
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -332,6 +341,7 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         date = findViewById(R.id.date);
         dateCard = findViewById(R.id.dateCard);
         options = findViewById(R.id.option);
+        person = findViewById(R.id.person);
         messageLayout = findViewById(R.id.messageLayout);
         markClosedText = findViewById(R.id.markClosedText);
         patientMarkClosedText = findViewById(R.id.patientMarkClosedText);

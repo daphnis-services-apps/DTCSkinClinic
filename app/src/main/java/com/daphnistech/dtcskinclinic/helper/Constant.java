@@ -65,4 +65,6 @@ public class Constant {
     public static final String DOCTOR_PHOTO = "doctor_photo";
     public static final String IS_SKIPPED = "isSkipped";
     public static final String IS_FIRST_TIME = "firstTime";
+    public static final String APPROVED = "approved";
+    public static final String IS_APPROVED = "isApproved";
 }

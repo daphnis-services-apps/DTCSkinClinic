@@ -43,7 +43,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MyAccount extends Fragment {
-    TextView name, mobile, transactions, doctors, profile;
+    TextView name, mobile, transactions, doctors, profile, approvalText;
     LinearLayout myAppointment, logout, myTransactions, myAccount, healthStatus, myDoctors;
     CircleImageView photo;
     View logoutView, paymentView;
@@ -72,6 +72,7 @@ public class MyAccount extends Fragment {
         name = view.findViewById(R.id.name);
         mobile = view.findViewById(R.id.mobile);
         photo = view.findViewById(R.id.photo);
+        approvalText = view.findViewById(R.id.approvalText);
         myAppointment = view.findViewById(R.id.myAppointmentsLayout);
         logout = view.findViewById(R.id.logOutLayout);
         logoutView = view.findViewById(R.id.logoutView);
@@ -96,6 +97,8 @@ public class MyAccount extends Fragment {
             healthStatus.setVisibility(View.GONE);
             doctors.setText("My Patients");
             transactions.setText("My Payments");
+            if (!new PreferenceManager(getActivity(), Constant.USER_DETAILS).isApproved())
+                approvalText.setVisibility(View.VISIBLE);
         }
 
         myAppointment.setOnClickListener(v -> {
