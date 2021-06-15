@@ -1,6 +1,5 @@
 package com.daphnistech.dtcskinclinic.activity;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +18,7 @@ import com.daphnistech.dtcskinclinic.appointment.MyAppointments;
 import com.daphnistech.dtcskinclinic.chat.ChatList;
 import com.daphnistech.dtcskinclinic.firebase.AppointmentIntentService;
 import com.daphnistech.dtcskinclinic.firebase.NotificationUtils;
+import com.daphnistech.dtcskinclinic.helper.APIManager;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
@@ -60,7 +60,10 @@ public class DoctorDashboard extends AppCompatActivity {
         AppointmentIntentService.handleActionDismiss(context);
         if (getIntent().getBooleanExtra("push", false))
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new MyAppointments()).commit();
-        else
+        else if (getIntent().getBooleanExtra("conversation", false)) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatList()).commit();
+            chipNavigationBar.setItemSelected(R.id.chat, true);
+        } else
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new MyAccount()).commit();
 
         chipNavigationBar.setOnItemSelectedListener(i -> {
@@ -103,50 +106,42 @@ public class DoctorDashboard extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         }
                         //Parsing the JSON
 
                     } else {
                         Log.i("onEmptyResponse", "Returned empty response");
+                        Toast.makeText(context, "Returned empty response", Toast.LENGTH_SHORT).show();
 
                     }
                 } else if (response.errorBody() != null) {
-
+                    Toast.makeText(context, response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
-
+                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     protected void onPause() {
-        if (NotificationUtils.isAppIsInBackground(context))
-            putStatus(Constant.OFFLINE);
+        if (NotificationUtils.isAppIsInBackground(context)) {
+        }
+        APIManager.getInstance().putStatus(context, Constant.OFFLINE);
+        //putStatus(Constant.OFFLINE);
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         if (NotificationUtils.isAppIsInBackground(context))
-            putStatus(Constant.ONLINE);
+            APIManager.getInstance().putStatus(context, Constant.ONLINE);
+        putStatus(Constant.ONLINE);
         super.onResume();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Dialog dialog = new Dialog(context);
-        // Removing the features of Normal Dialogs
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_confirm_exit);
-        dialog.setCancelable(true);
-        dialog.show();
-
-        dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> finish());
-        dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
     }
 
     public void setBottomSelected() {

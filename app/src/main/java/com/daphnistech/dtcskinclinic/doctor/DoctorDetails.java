@@ -89,7 +89,9 @@ public class DoctorDetails extends Fragment {
 
         next.setOnClickListener(v -> {
             if (validateFields()) {
+                setValues();
                 sendToDashboard();
+                //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AddCertificates()).addToBackStack("user").commit();
             } else {
                 Toast.makeText(getActivity(), "Fill all required fields", Toast.LENGTH_SHORT).show();
             }
@@ -102,6 +104,14 @@ public class DoctorDetails extends Fragment {
                 .maxResultSize(1080, 1080)//Final image resolution will be less than 1080 x 1080(Optional)
                 .start());
 
+    }
+
+    private void setValues() {
+        preferenceManager.setName(name.getText().toString());
+        preferenceManager.setAge(age.getText().toString());
+        preferenceManager.setGender(male.isChecked() ? Constant.MALE : female.isChecked() ? Constant.FEMALE : Constant.OTHERS);
+        preferenceManager.setDesignation(designation.getText().toString());
+        preferenceManager.setConsultationFees(consultationFees.getText().toString());
     }
 
     private void sendToDashboard() {
@@ -222,13 +232,13 @@ public class DoctorDetails extends Fragment {
             profilePic.setImageResource(R.drawable.doctor_plus);
         else profilePic.setImageURI(Uri.parse(preferenceManager.getProfileImage()));
         switch (preferenceManager.getGender()) {
-            case "male":
+            case Constant.MALE:
                 male.setChecked(true);
                 break;
-            case "female":
+            case Constant.FEMALE:
                 female.setChecked(true);
                 break;
-            case "others":
+            case Constant.OTHERS:
                 others.setChecked(true);
                 break;
         }

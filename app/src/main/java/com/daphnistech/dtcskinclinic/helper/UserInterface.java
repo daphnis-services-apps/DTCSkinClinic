@@ -124,6 +124,13 @@ public interface UserInterface {
     );
 
     @FormUrlEncoded
+    @POST("getAppointmentStatus")
+    Call<String> getAppointmentStatus(
+            @Field("patient_id") int patient_id,
+            @Field("doctor_id") int doctor_id
+    );
+
+    @FormUrlEncoded
     @POST("addAppointment")
     Call<String> addAppointment(
             @Field("name") String name,
@@ -175,7 +182,7 @@ public interface UserInterface {
     @FormUrlEncoded
     @POST("addTransaction")
     Call<String> addTransaction(
-            @Field("transaction_id") int transaction_id,
+            @Field("transaction_id") String transaction_id,
             @Field("patient_id") int patient_id,
             @Field("doctor_id") int doctor_id,
             @Field("transaction_amount") int transaction_amount,

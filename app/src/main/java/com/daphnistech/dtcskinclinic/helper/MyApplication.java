@@ -1,6 +1,16 @@
 package com.daphnistech.dtcskinclinic.helper;
 
+import android.app.Activity;
 import android.app.Application;
+import android.app.Dialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+
+import com.daphnistech.dtcskinclinic.R;
 
 public class MyApplication extends Application {
 
@@ -60,6 +70,40 @@ public class MyApplication extends Application {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);*/
+    }
+
+    public static boolean isConnectionAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+            return netInfo != null && netInfo.isConnected()
+                    && netInfo.isConnectedOrConnecting()
+                    && netInfo.isAvailable();
+        }
+        return false;
+    }
+
+    public static void exitOnBackPressed(View view, Activity context) {
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener((v, keyCode, event) -> {
+
+            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                // handle back button's click listener
+                Dialog dialog = new Dialog(context);
+                // Removing the features of Normal Dialogs
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.dialog_confirm_exit);
+                dialog.setCancelable(true);
+                dialog.show();
+
+                dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> context.finish());
+                dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
+
+                return true;
+            }
+            return false;
+        });
     }
 }
 

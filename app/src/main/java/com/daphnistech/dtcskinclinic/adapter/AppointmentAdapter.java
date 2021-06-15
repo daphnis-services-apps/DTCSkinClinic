@@ -1,6 +1,7 @@
 package com.daphnistech.dtcskinclinic.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.daphnistech.dtcskinclinic.R;
+import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.model.Appointments;
@@ -56,6 +58,16 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             holder.status.setTextColor(Color.RED);
         } else {
             holder.status.setTextColor(Color.GREEN);
+            holder.parentLayout.setOnClickListener(v -> context.startActivity(
+                    new Intent(context, ConversationActivity.class)
+                            .putExtra("appointment_id", appointments.getAppointmentId())
+                            .putExtra("name", appointments.getName())
+                            .putExtra("receiver_id", appointments.getId())
+                            .putExtra("is_online", false)
+                            .putExtra("appointment_status", appointments.getAppointmentStatus())
+                            .putExtra("unread_count", 0)
+                            .putExtra("is_listed", false)
+            ));
         }
     }
 
@@ -73,7 +85,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             super(itemView);
             name = itemView.findViewById(R.id.name);
             designation = itemView.findViewById(R.id.designation);
-            parentLayout = itemView.findViewById(R.id.parentLayout);
+            parentLayout = itemView.findViewById(R.id.checkLayout);
             fees = itemView.findViewById(R.id.fees);
             mode = itemView.findViewById(R.id.mode);
             status = itemView.findViewById(R.id.status);

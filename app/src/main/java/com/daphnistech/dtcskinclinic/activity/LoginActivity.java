@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseAuth mAuth;
     private String mVerificationId;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
+    private boolean autoVerify = false;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -118,8 +119,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onOTPComplete(String otp) {
-                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, otp);
-                signInWithPhoneAuthCredential(credential);
+                if (!autoVerify) {
+                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, otp);
+                    signInWithPhoneAuthCredential(credential);
+                }
                 //updateUser();
             }
         });
@@ -135,8 +138,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
                 Log.d(TAG, "onVerificationCompleted:" + credential);
+                autoVerify = true;
                 otpTextView.setOTP(credential.getSmsCode());
-                //signInWithPhoneAuthCredential(credential);
+                signInWithPhoneAuthCredential(credential);
             }
 
             @Override
@@ -197,21 +201,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         if (v == submit) {
             if (mobile.getText().length() == 10) {
-               /* PhoneAuthOptions options =
+                PhoneAuthOptions options =
                         PhoneAuthOptions.newBuilder(mAuth)
                                 .setPhoneNumber("+91" + mobile.getText().toString())       // Phone number to verify
                                 .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                                 .setActivity(this)                 // Activity (for callback binding)
                                 .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                                 .build();
-                PhoneAuthProvider.verifyPhoneNumber(options);*/
+                PhoneAuthProvider.verifyPhoneNumber(options);
                 progressBar.setIndeterminate(true);
                 progressBar.setVisibility(View.VISIBLE);
                 submit.setVisibility(View.GONE);
                 withoutLogin.setVisibility(View.GONE);
                 new Handler().postDelayed(() -> {
+
                 }, 1500);
-                updateUser();
+                //updateUser();
             } else {
                 Toast.makeText(this, "Enter Valid Mobile Number", Toast.LENGTH_LONG).show();
             }

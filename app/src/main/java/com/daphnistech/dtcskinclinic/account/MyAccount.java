@@ -30,6 +30,7 @@ import com.daphnistech.dtcskinclinic.appointment.MyAppointments;
 import com.daphnistech.dtcskinclinic.chat.ChatList;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
+import com.daphnistech.dtcskinclinic.helper.MyApplication;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
 import com.daphnistech.dtcskinclinic.transaction.TransactionsList;
@@ -184,6 +185,7 @@ public class MyAccount extends Fragment {
                             } else {
                                 PreferenceManager.clearAll(getActivity());
                                 CustomProgressBar.hideProgressBar();
+                                new PreferenceManager(getActivity(), Constant.USER_DETAILS).setVisited(true);
                                 getActivity().startActivity(new Intent(getActivity(), LoginChooser.class));
                                 getActivity().finish();
                             }
@@ -220,5 +222,9 @@ public class MyAccount extends Fragment {
         Glide.with(this).load(new PreferenceManager(getActivity(), Constant.USER_DETAILS).getProfileImage()).placeholder(R.drawable.diagnose).into(photo);
         name.setText(new PreferenceManager(getActivity(), Constant.USER_DETAILS).getName());
         mobile.setText(new PreferenceManager(getActivity(), Constant.USER_DETAILS).getMobile());
+
+        MyApplication.exitOnBackPressed(getView(), getActivity());
     }
+
+
 }

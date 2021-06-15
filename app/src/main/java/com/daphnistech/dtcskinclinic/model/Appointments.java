@@ -1,6 +1,7 @@
 package com.daphnistech.dtcskinclinic.model;
 
 public class Appointments {
+    int id;
     String name;
     String designation;
     String photo;
@@ -11,7 +12,8 @@ public class Appointments {
     String appointmentMode;
     String appointmentStatus;
 
-    public Appointments(String name, String designation, String photo, int transactionAmount, String appointmentDate, String appointmentTime, int appointmentId, String appointmentMode, String appointmentStatus) {
+    public Appointments(int id, String name, String designation, String photo, int transactionAmount, String appointmentDate, String appointmentTime, int appointmentId, String appointmentMode, String appointmentStatus) {
+        this.id = id;
         this.name = name;
         this.designation = designation;
         this.photo = photo;
@@ -21,6 +23,14 @@ public class Appointments {
         this.appointmentId = appointmentId;
         this.appointmentMode = appointmentMode;
         this.appointmentStatus = appointmentStatus;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

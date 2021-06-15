@@ -97,7 +97,7 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
     private String appointment_status;
     private LinearLayoutManager layoutManager;
     private CircleImageView profile;
-    private boolean imageSelect = false;
+    private boolean imageSelect = false, is_listed = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,11 +126,15 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         imageButton.setOnClickListener(this);
         sendButton.setOnClickListener(this);
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+        back.setOnClickListener(v -> {
+            if (is_listed) {
+                if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
+                    startActivity(new Intent(context, PatientDashboard.class));
+                } else {
+                    startActivity(new Intent(context, DoctorDashboard.class).putExtra("conversation", true));
+                }
             }
+            finish();
         });
 
         recyclerView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -348,6 +352,7 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
         markClosedOrOpen = findViewById(R.id.markClosed);
 
         Glide.with(context).load(getIntent().getStringExtra("profile")).placeholder(getDrawable(R.drawable.doctor_plus)).into(profile);
+        is_listed = getIntent().getBooleanExtra("is_listed", true);
         name.setText(getIntent().getStringExtra("name"));
         receiver_id = getIntent().getIntExtra("receiver_id", 0);
         unread_count = getIntent().getIntExtra("unread_count", 0);
@@ -608,10 +613,12 @@ public class ConversationActivity extends AppCompatActivity implements TextWatch
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
-            startActivity(new Intent(context, PatientDashboard.class));
-        } else {
-            startActivity(new Intent(context, DoctorDashboard.class));
+        if (is_listed) {
+            if (preferenceManager.getLoginType().equals(Constant.PATIENT)) {
+                startActivity(new Intent(context, PatientDashboard.class));
+            } else {
+                startActivity(new Intent(context, DoctorDashboard.class).putExtra("conversation", true));
+            }
         }
         finish();
     }

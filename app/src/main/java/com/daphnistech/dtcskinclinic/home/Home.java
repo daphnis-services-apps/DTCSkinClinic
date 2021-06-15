@@ -1,13 +1,11 @@
 package com.daphnistech.dtcskinclinic.home;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +28,7 @@ import com.daphnistech.dtcskinclinic.adapter.AdvertViewAdapter;
 import com.daphnistech.dtcskinclinic.adapter.DoctorsAdapter;
 import com.daphnistech.dtcskinclinic.appointment.ConfirmAppointment;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
+import com.daphnistech.dtcskinclinic.helper.MyApplication;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
 import com.daphnistech.dtcskinclinic.model.Advertisement;
 import com.daphnistech.dtcskinclinic.model.Doctors;
@@ -92,16 +91,6 @@ public class Home extends Fragment {
         SnapHelper snapHelper1 = new LinearSnapHelper();
         snapHelper1.attachToRecyclerView(doctorsRecyclerView);
         doctorsRecyclerView.setAdapter(doctorsAdapter);
-
-        view.setFocusableInTouchMode(true);
-        view.requestFocus();
-        view.setOnKeyListener((v, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                getActivity().finish();
-                return true;
-            }
-            return false;
-        });
 
     }
 
@@ -224,23 +213,6 @@ public class Home extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getView().setOnKeyListener((v, keyCode, event) -> {
-
-            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                // handle back button's click listener
-                Dialog dialog = new Dialog(context);
-                // Removing the features of Normal Dialogs
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.dialog_confirm_exit);
-                dialog.setCancelable(true);
-                dialog.show();
-
-                dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> getActivity().finish());
-                dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
-
-                return true;
-            }
-            return false;
-        });
+        MyApplication.exitOnBackPressed(getView(), getActivity());
     }
 }

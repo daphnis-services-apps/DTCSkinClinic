@@ -323,7 +323,9 @@ public class ViewPatientDetails extends AppCompatActivity implements View.OnClic
                 preferenceManager.setAffectedArea(currentDisease.getString("affected_area"));
                 preferenceManager.setPDF(currentDisease.getString("pdf"));
                 editPanel.setVisibility(View.GONE);
-                editProfile.setVisibility(View.VISIBLE);
+                if (preferenceManager.getLoginType().equals(Constant.PATIENT))
+                    editProfile.setVisibility(View.VISIBLE);
+                else editProfile.setVisibility(View.GONE);
                 viewPanel.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {

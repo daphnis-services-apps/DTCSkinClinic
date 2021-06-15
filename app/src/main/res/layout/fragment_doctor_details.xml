@@ -75,7 +75,7 @@
             <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
                 android:id="@+id/nameLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/grey"
@@ -88,7 +88,7 @@
                 <EditText
                     android:id="@+id/name"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:hint="Name"
                     android:inputType="textCapWords"
                     android:textColor="@color/black"
@@ -99,7 +99,7 @@
             <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
                 android:id="@+id/ageLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/grey"
@@ -112,7 +112,7 @@
                 <EditText
                     android:id="@+id/age"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:hint="Age"
                     android:inputType="number"
                     android:maxLength="2"
@@ -159,7 +159,7 @@
             <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
                 android:id="@+id/addressLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:background="@color/grey"
                 android:padding="16dp"
@@ -171,7 +171,7 @@
                 <EditText
                     android:id="@+id/designation"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:hint="Designation"
                     android:inputType="textCapWords"
                     android:textColor="@color/black"
@@ -182,7 +182,7 @@
             <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
                 android:id="@+id/stateLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/grey"
@@ -195,7 +195,7 @@
                 <EditText
                     android:id="@+id/consultationFees"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:inputType="number"
                     android:hint="Consultation Fees"
                     android:textColor="@color/black"

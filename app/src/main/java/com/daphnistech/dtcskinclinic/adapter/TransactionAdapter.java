@@ -35,13 +35,15 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Transaction transaction = transactionList.get(position);
-        holder.transactionId.setText(String.valueOf(transaction.getTransactionId()));
+        holder.transactionId.setText(transaction.getTransactionId());
         holder.appointmentId.setText(String.valueOf(transaction.getAppointmentId()));
         holder.transactionStatus.setText(transaction.getTransactionStatus());
         holder.amount.setText(String.format("\u20B9 %s", transaction.getTransactionAmount()));
         holder.time.setText(String.format("%s\n%s", transaction.getTransactionDate(), transaction.getTransactionTime()));
         if (transaction.getTransactionStatus().equalsIgnoreCase("success")) {
             holder.transactionStatus.setTextColor(Color.GREEN);
+        } else {
+            holder.transactionStatus.setTextColor(Color.RED);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.daphnistech.dtcskinclinic.activity;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -138,19 +137,6 @@ public class PatientDashboard extends AppCompatActivity {
         if (!NotificationUtils.isAppIsInBackground(context))
             putStatus(Constant.ONLINE);
         super.onResume();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Dialog dialog = new Dialog(context);
-        // Removing the features of Normal Dialogs
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_confirm_exit);
-        dialog.setCancelable(true);
-        dialog.show();
-
-        dialog.findViewById(R.id.confirm).setOnClickListener(confirm -> finish());
-        dialog.findViewById(R.id.cancel).setOnClickListener(cancel -> dialog.dismiss());
     }
 
     public void setBottomSelected() {

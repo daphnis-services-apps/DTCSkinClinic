@@ -121,7 +121,7 @@ public class MyAppointments extends Fragment {
                                 JSONArray jsonArray = jsonObject.getJSONArray("appointments");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject appointments = new JSONObject(jsonArray.getString(i));
-                                    appointmentList.add(new Appointments(appointments.getString("name"), appointments.getString("body"), appointments.getString("photo"), appointments.getInt("transaction_amount"), appointments.getString("appointment_date"), appointments.getString("appointment_time"), appointments.getInt("appointment_id"), appointments.getString("appointment_mode"), appointments.getString("appointment_status")));
+                                    appointmentList.add(new Appointments(appointments.getInt("id"), appointments.getString("name"), appointments.getString("body"), appointments.getString("photo"), appointments.getInt("transaction_amount"), appointments.getString("appointment_date"), appointments.getString("appointment_time"), appointments.getInt("appointment_id"), appointments.getString("appointment_mode"), appointments.getString("appointment_status")));
                                 }
                                 appointmentAdapter.notifyDataSetChanged();
                                 CustomProgressBar.hideProgressBar();

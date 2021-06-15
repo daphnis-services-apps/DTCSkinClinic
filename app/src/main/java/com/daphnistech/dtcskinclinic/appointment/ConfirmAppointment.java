@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -30,9 +31,11 @@ import com.daphnistech.dtcskinclinic.activity.ConversationActivity;
 import com.daphnistech.dtcskinclinic.activity.LoginActivity;
 import com.daphnistech.dtcskinclinic.helper.Constant;
 import com.daphnistech.dtcskinclinic.helper.CustomProgressBar;
+import com.daphnistech.dtcskinclinic.helper.PaymentManager;
 import com.daphnistech.dtcskinclinic.helper.PolicyOpener;
 import com.daphnistech.dtcskinclinic.helper.PreferenceManager;
 import com.daphnistech.dtcskinclinic.helper.UserInterface;
+import com.github.florent37.inlineactivityresult.InlineActivityResult;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -41,8 +44,9 @@ import org.json.JSONObject;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Random;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -54,6 +58,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import static com.daphnistech.dtcskinclinic.helper.DateHelper.getCurrentTime;
 
 public class ConfirmAppointment extends Fragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+    final int UPI_PAYMENT = 0;
     CircleImageView photo;
     TextView name, designation, mode, consultationFees, submit, date, time, myAppointments, tnc;
     EditText remarks;
@@ -104,7 +109,8 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
         submit.setOnClickListener(v -> {
             if (preferenceManager.getUserID() != 0) {
                 if (isSelected)
-                    addTransaction();
+                    getAppointmentStatus();
+                    //addTransaction();
                 else
                     Toast.makeText(getActivity(), "Please Select Date for Appointment", Toast.LENGTH_SHORT).show();
             } else {
@@ -120,7 +126,72 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
         back.setOnClickListener(v -> getFragmentManager().popBackStackImmediate());
     }
 
-    private void addTransaction() {
+    private void getAppointmentStatus() {
+        CustomProgressBar.showProgressBar(getContext(), false);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserInterface.BASE_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+
+        UserInterface api = retrofit.create(UserInterface.class);
+
+        Call<String> call = api.getAppointmentStatus(
+                preferenceManager.getUserID(),
+                preferenceManager.getDoctorId());
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        String jsonResponse = response.body();
+                        try {
+                            JSONObject jsonObject = new JSONObject(jsonResponse);
+                            if (!jsonObject.getBoolean("error")) {
+                                payUsingUpi(preferenceManager.getConsultationFees());
+                            } else {
+                                Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                int id = jsonObject.getInt("appointment_id");
+                                getActivity().startActivity(
+                                        new Intent(getActivity(), ConversationActivity.class)
+                                                .putExtra("appointment_id", id)
+                                                .putExtra("name", preferenceManager.getDoctorName())
+                                                .putExtra("receiver_id", preferenceManager.getDoctorId())
+                                                .putExtra("appointment_status", "open")
+                                                .putExtra("is_online", false)
+                                                .putExtra("unread_count", 0)
+                                );
+                                getActivity().finish();
+                                CustomProgressBar.hideProgressBar();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            CustomProgressBar.hideProgressBar();
+                        }
+                        //Parsing the JSON
+
+                    } else {
+                        Log.i("onEmptyResponse", "Returned empty response");
+                        Toast.makeText(getActivity(), "Returned empty response", Toast.LENGTH_SHORT).show();
+                        CustomProgressBar.hideProgressBar();
+
+                    }
+                } else if (response.errorBody() != null) {
+                    Toast.makeText(getActivity(), response.errorBody().toString(), Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                CustomProgressBar.hideProgressBar();
+            }
+        });
+    }
+
+    private void addTransaction(String status, String transaction_id) {
         CustomProgressBar.showProgressBar(getContext(), false);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UserInterface.BASE_URL)
@@ -130,13 +201,13 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
         UserInterface api = retrofit.create(UserInterface.class);
 
         Call<String> call = api.addTransaction(
-                new Random().nextInt(500),
+                transaction_id,
                 preferenceManager.getUserID(),
                 preferenceManager.getDoctorId(),
                 Integer.parseInt(preferenceManager.getConsultationFees()),
                 getCurrentTime("date"),
                 getCurrentTime("time"),
-                "Success");
+                status);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -320,5 +391,51 @@ public class ConfirmAppointment extends Fragment implements View.OnClickListener
         }
         time.setText(String.format("%s\n%s", formattedDate, formattedTime));
         isSelected = true;
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    void payUsingUpi(String amount) {
+
+        Uri uri = Uri.parse("upi://pay").buildUpon()
+                .appendQueryParameter("pa", "9971747420-1@okbizaxis")
+                .appendQueryParameter("pn", "DTC SKIN CLINIC")
+                .appendQueryParameter("mc", "")
+                .appendQueryParameter("tr", "1458527441954")
+                .appendQueryParameter("tn", "DTC Skin Clinic Appointment")
+                .appendQueryParameter("am", amount)
+                .appendQueryParameter("cu", "INR")
+                .build();
+
+
+        Intent upiPayIntent = new Intent(Intent.ACTION_VIEW);
+        upiPayIntent.setData(uri);
+
+        // will always show a dialog to user to choose an app
+        Intent chooser = Intent.createChooser(upiPayIntent, "Pay with");
+
+        // check if intent resolves
+        if (null != chooser.resolveActivity(getActivity().getPackageManager())) {
+            new InlineActivityResult(getActivity())
+                    .startForResult(chooser)
+                    .onSuccess(result -> {
+                        String text = result.getData().getStringExtra("response");
+                        Log.d("UPI", "onActivityResult: " + text);
+                        ArrayList<String> dataList = new ArrayList<>();
+                        dataList.add(text);
+                        Map<String, String> paymentInfo = PaymentManager.getInstance(getActivity()).upiPaymentDataOperation(dataList);
+                        CustomProgressBar.hideProgressBar();
+                        if (paymentInfo != null)
+                            addTransaction(paymentInfo.get("status"), paymentInfo.get("transaction_id"));
+                    })
+                    .onFail(result -> {
+                        Toast.makeText(getActivity(), "Payment Failed", Toast.LENGTH_SHORT).show();
+                        CustomProgressBar.hideProgressBar();
+                    });
+
+        } else {
+            Toast.makeText(getActivity(), "No UPI app found, please install one to continue", Toast.LENGTH_SHORT).show();
+            CustomProgressBar.hideProgressBar();
+        }
+
     }
 }

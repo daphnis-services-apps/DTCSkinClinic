@@ -63,6 +63,7 @@ public class MyPatientDoctorAdapter extends RecyclerView.Adapter<MyPatientDoctor
                         .putExtra("is_online", false)
                         .putExtra("appointment_status", myPatientDoctor.getAppointmentStatus())
                         .putExtra("unread_count", 0)
+                        .putExtra("is_listed", false)
         ));
     }
 

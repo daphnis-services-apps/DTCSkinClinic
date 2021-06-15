@@ -2,14 +2,14 @@ package com.daphnistech.dtcskinclinic.model;
 
 public class Transaction {
     int paymentId;
-    int transactionId;
+    String transactionId;
     int appointmentId;
     int transactionAmount;
     String transactionDate;
     String transactionTime;
     String transactionStatus;
 
-    public Transaction(int paymentId, int transactionId, int appointmentId, int transactionAmount, String transactionDate, String transactionTime, String transactionStatus) {
+    public Transaction(int paymentId, String transactionId, int appointmentId, int transactionAmount, String transactionDate, String transactionTime, String transactionStatus) {
         this.paymentId = paymentId;
         this.transactionId = transactionId;
         this.appointmentId = appointmentId;
@@ -27,11 +27,11 @@ public class Transaction {
         this.paymentId = paymentId;
     }
 
-    public int getTransactionId() {
+    public String getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(int transactionId) {
+    public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
 

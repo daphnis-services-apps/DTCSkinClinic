@@ -104,7 +104,7 @@ public class TransactionsList extends Fragment {
                                 JSONArray jsonArray = jsonObject.getJSONArray("transactions");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject transactions = new JSONObject(jsonArray.getString(i));
-                                    transactionList.add(new Transaction(transactions.getInt("payment_id"), transactions.getInt("transaction_id"), transactions.getInt("appointment_id"), transactions.getInt("transaction_amount"), transactions.getString("transaction_date"), transactions.getString("transaction_time"), transactions.getString("transaction_status")));
+                                    transactionList.add(new Transaction(transactions.getInt("payment_id"), transactions.getString("transaction_id"), transactions.getInt("appointment_id"), transactions.getInt("transaction_amount"), transactions.getString("transaction_date"), transactions.getString("transaction_time"), transactions.getString("transaction_status")));
                                 }
                                 transactionAdapter.notifyDataSetChanged();
                                 CustomProgressBar.hideProgressBar();
